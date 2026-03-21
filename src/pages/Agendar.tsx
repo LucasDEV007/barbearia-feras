@@ -185,9 +185,9 @@ const Agendar = () => {
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-2">Seus dados</h2>
             <div className="bg-secondary rounded-lg p-4 mb-6 text-sm space-y-1">
-              <p><span className="text-muted-foreground">Serviço:</span> <span className="font-medium">{servico}</span></p>
-              <p><span className="text-muted-foreground">Data:</span> <span className="font-medium">{format(data, "dd/MM/yyyy")}</span></p>
-              <p><span className="text-muted-foreground">Horário:</span> <span className="font-medium">{horario}</span></p>
+              <p><span className="text-muted-foreground mr-2">Serviço:</span><span className="font-medium">{servico}</span></p>
+              <p><span className="text-muted-foreground mr-2">Data:</span><span className="font-medium">{format(data, "dd/MM/yyyy")}</span></p>
+              <p><span className="text-muted-foreground mr-2">Horário:</span><span className="font-medium">{horario}</span></p>
             </div>
             <AgendamentoForm onSubmit={handleSubmit} loading={submitting} />
             <Button variant="ghost" className="mt-4" onClick={() => setStep(3)}>← Voltar</Button>
