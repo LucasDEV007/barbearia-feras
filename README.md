@@ -5,11 +5,11 @@ Sistema web para agendamento de horários em barbearias.
 ## Funcionalidades
 
 - Agendamento de horários
-- Seleção de serviços
+- Seleção de atividades
 - Painel administrativo
 - Cancelamento de agendamentos
 
-## Tecnologias
+## Ferramentas
 
 - React
 - Tailwind CSS
