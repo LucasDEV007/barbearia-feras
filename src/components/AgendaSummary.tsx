@@ -21,7 +21,7 @@ const AgendaSummary = ({ total, confirmados, cancelados }: AgendaSummaryProps) =
       </Card>
       <Card className="bg-card border-border">
         <CardContent className="p-4 flex items-center gap-3">
-          <CalendarCheck className="h-8 w-8 text-green-400" />
+          <CalendarCheck className="h-8 w-8 text-success" />
           <div>
             <p className="text-2xl font-bold text-foreground">{confirmados}</p>
             <p className="text-xs text-muted-foreground">Confirmados</p>

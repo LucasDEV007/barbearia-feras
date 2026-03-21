@@ -79,7 +79,7 @@ const AgendaList = ({ agendamentos, onCancelar, loading, cancelando }: AgendaLis
               </TableCell>
               <TableCell>{ag.servico}</TableCell>
               <TableCell>
-                <Badge variant={ag.status === "confirmado" ? "default" : "destructive"} className={ag.status === "confirmado" ? "bg-green-600/20 text-green-400 border-green-600/30" : ""}>
+                <Badge variant={ag.status === "confirmado" ? "default" : "destructive"} className={ag.status === "confirmado" ? "bg-success/20 text-success border-success/30" : ""}>
                   {ag.status}
                 </Badge>
               </TableCell>
