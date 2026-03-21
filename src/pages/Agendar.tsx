@@ -102,7 +102,7 @@ const Agendar = () => {
                 step >= s.num ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
               )}>
                 <span>{s.num}</span>
-                <span className="hidden sm:inline">{s.label}</span>
+                <span className="hidden xs:inline sm:inline">{s.label}</span>
               </div>
               {i < steps.length - 1 && <ChevronRight className="h-4 w-4 text-muted-foreground mx-1" />}
             </div>
