@@ -14,7 +14,7 @@ Sistema web para agendamento de horários em barbearias.
 - React
 - Tailwind CSS
 - Supabase
-- Lovable
+- Lovable 
 
 ## Deploy
 
