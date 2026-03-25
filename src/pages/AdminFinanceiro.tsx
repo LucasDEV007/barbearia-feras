@@ -40,8 +40,8 @@ const AdminFinanceiro = () => {
 
   const fetchDespesas = useCallback(async () => {
     setLoading(true);
-    const { data } = await supabase.from("despesas").select("*").order("vencimento", { ascending: false });
-    setDespesas((data as Despesa[]) || []);
+    const { data } = await supabase.from("despesas" as any).select("*").order("vencimento", { ascending: false });
+    setDespesas((data as unknown as Despesa[]) || []);
     setLoading(false);
   }, []);
 
