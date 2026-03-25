@@ -60,23 +60,21 @@ const AppHeader = () => {
             </Link>
           </Button>
 
-          {isAuthenticated && (
-            <>
-              <Button
-                variant={isActive("/admin") ? "secondary" : "ghost"}
-                size="sm"
-                asChild
-              >
-                <Link to="/admin">
-                  <ShieldCheck className="h-4 w-4 mr-1" />
-                  <span className="hidden sm:inline">Admin</span>
-                </Link>
-              </Button>
+          <Button
+            variant={isActive("/admin") ? "secondary" : "ghost"}
+            size="sm"
+            asChild
+          >
+            <Link to={isAuthenticated ? "/admin" : "/login"}>
+              <ShieldCheck className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">Admin</span>
+            </Link>
+          </Button>
 
-              <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground">
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </>
+          {isAuthenticated && (
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground">
+              <LogOut className="h-4 w-4" />
+            </Button>
           )}
         </nav>
       </div>
