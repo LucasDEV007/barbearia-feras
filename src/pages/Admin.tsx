@@ -6,12 +6,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, LogOut, Scissors } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
-import { BARBEARIA_NOME } from "@/lib/constants";
 import AgendaList from "@/components/AgendaList";
 import AgendaSummary from "@/components/AgendaSummary";
+import AppHeader from "@/components/AppHeader";
 
 interface Agendamento {
   id: string;
