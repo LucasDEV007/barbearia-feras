@@ -31,8 +31,8 @@ const AdminMensagens = () => {
   useEffect(() => {
     const fetch = async () => {
       setLoading(true);
-      const { data } = await supabase.from("mensagem_templates").select("*").order("tipo");
-      setTemplates((data as Template[]) || []);
+      const { data } = await supabase.from("mensagem_templates" as any).select("*").order("tipo");
+      setTemplates((data as unknown as Template[]) || []);
       setLoading(false);
     };
     fetch();
