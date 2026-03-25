@@ -47,6 +47,92 @@ export type Database = {
         }
         Relationships: []
       }
+      despesas: {
+        Row: {
+          categoria: string
+          created_at: string | null
+          descricao: string
+          id: string
+          pago: boolean
+          user_id: string
+          valor: number
+          vencimento: string
+        }
+        Insert: {
+          categoria?: string
+          created_at?: string | null
+          descricao: string
+          id?: string
+          pago?: boolean
+          user_id: string
+          valor: number
+          vencimento: string
+        }
+        Update: {
+          categoria?: string
+          created_at?: string | null
+          descricao?: string
+          id?: string
+          pago?: boolean
+          user_id?: string
+          valor?: number
+          vencimento?: string
+        }
+        Relationships: []
+      }
+      mensagem_templates: {
+        Row: {
+          ativo: boolean
+          conteudo: string
+          created_at: string | null
+          id: string
+          tipo: string
+        }
+        Insert: {
+          ativo?: boolean
+          conteudo: string
+          created_at?: string | null
+          id?: string
+          tipo: string
+        }
+        Update: {
+          ativo?: boolean
+          conteudo?: string
+          created_at?: string | null
+          id?: string
+          tipo?: string
+        }
+        Relationships: []
+      }
+      mensagens_enviadas: {
+        Row: {
+          agendamento_id: string
+          enviado_em: string | null
+          id: string
+          tipo: string
+        }
+        Insert: {
+          agendamento_id: string
+          enviado_em?: string | null
+          id?: string
+          tipo: string
+        }
+        Update: {
+          agendamento_id?: string
+          enviado_em?: string | null
+          id?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mensagens_enviadas_agendamento_id_fkey"
+            columns: ["agendamento_id"]
+            isOneToOne: false
+            referencedRelation: "agendamentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
