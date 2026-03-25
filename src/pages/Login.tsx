@@ -37,7 +37,9 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+    <div className="min-h-screen bg-background flex flex-col">
+      <AppHeader />
+      <div className="flex-1 flex items-center justify-center px-4">
       <Card className="w-full max-w-sm bg-card border-border">
         <CardHeader className="text-center">
           <Scissors className="h-8 w-8 text-primary mx-auto mb-2" />
