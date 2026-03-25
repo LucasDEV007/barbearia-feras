@@ -2,7 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Copy, X } from "lucide-react";
+import { Copy, X, CheckCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface Agendamento {
