@@ -81,19 +81,7 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border px-4 py-4">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Scissors className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-bold text-primary">{BARBEARIA_NOME}</h1>
-            <span className="text-muted-foreground text-sm ml-2">Painel Admin</span>
-          </div>
-          <Button variant="ghost" onClick={handleLogout} className="text-muted-foreground">
-            <LogOut className="h-4 w-4 mr-2" /> Sair
-          </Button>
-        </div>
-      </header>
+      <AppHeader />
 
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
         {/* Date filter */}
