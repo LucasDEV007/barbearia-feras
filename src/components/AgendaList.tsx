@@ -18,6 +18,7 @@ interface Agendamento {
 interface AgendaListProps {
   agendamentos: Agendamento[];
   onCancelar: (id: string) => void;
+  onConcluir?: (id: string) => void;
   loading?: boolean;
   cancelando?: string | null;
 }
