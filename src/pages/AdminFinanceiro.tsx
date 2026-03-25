@@ -74,7 +74,7 @@ const AdminFinanceiro = () => {
   };
 
   const togglePago = async (id: string, current: boolean) => {
-    await supabase.from("despesas").update({ pago: !current }).eq("id", id);
+    await supabase.from("despesas" as any).update({ pago: !current } as any).eq("id", id);
     fetchDespesas();
   };
 

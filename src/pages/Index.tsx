@@ -1,5 +1,6 @@
 import HeroSection from "@/components/HeroSection";
 import ServicosSection from "@/components/ServicosSection";
+import LocationSection from "@/components/LocationSection";
 import AppHeader from "@/components/AppHeader";
 import { BARBEARIA_NOME } from "@/lib/constants";
 import { Scissors } from "lucide-react";
@@ -10,6 +11,7 @@ const Index = () => {
       <AppHeader />
       <HeroSection />
       <ServicosSection />
+      <LocationSection />
 
       <footer className="border-t border-border py-8 text-center">
         <div className="flex items-center justify-center gap-2 text-primary mb-2">

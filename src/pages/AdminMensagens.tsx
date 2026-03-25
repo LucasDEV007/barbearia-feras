@@ -42,7 +42,7 @@ const AdminMensagens = () => {
     const changes = edits[t.id];
     if (!changes) return;
     setSaving(t.id);
-    const { error } = await supabase.from("mensagem_templates").update(changes).eq("id", t.id);
+    const { error } = await supabase.from("mensagem_templates" as any).update(changes as any).eq("id", t.id);
     setSaving(null);
     if (error) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });

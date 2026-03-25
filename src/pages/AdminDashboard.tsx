@@ -23,7 +23,7 @@ const AdminDashboard = () => {
 
       const [agRes, despRes] = await Promise.all([
         supabase.from("agendamentos").select("*").gte("data", desde).order("data"),
-        supabase.from("despesas").select("*").gte("vencimento", desde),
+        supabase.from("despesas" as any).select("*").gte("vencimento", desde),
       ]);
 
       setAgendamentos(agRes.data || []);
