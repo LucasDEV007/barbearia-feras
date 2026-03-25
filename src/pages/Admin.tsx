@@ -6,12 +6,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, LogOut, Scissors } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
-import { BARBEARIA_NOME } from "@/lib/constants";
 import AgendaList from "@/components/AgendaList";
 import AgendaSummary from "@/components/AgendaSummary";
+import AppHeader from "@/components/AppHeader";
 
 interface Agendamento {
   id: string;
@@ -72,28 +72,13 @@ const Admin = () => {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-  };
 
   const confirmados = agendamentos.filter((a) => a.status === "confirmado").length;
   const cancelados = agendamentos.filter((a) => a.status === "cancelado").length;
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border px-4 py-4">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Scissors className="h-6 w-6 text-primary" />
-            <h1 className="text-xl font-bold text-primary">{BARBEARIA_NOME}</h1>
-            <span className="text-muted-foreground text-sm ml-2">Painel Admin</span>
-          </div>
-          <Button variant="ghost" onClick={handleLogout} className="text-muted-foreground">
-            <LogOut className="h-4 w-4 mr-2" /> Sair
-          </Button>
-        </div>
-      </header>
+      <AppHeader />
 
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
         {/* Date filter */}

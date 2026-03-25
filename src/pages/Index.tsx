@@ -1,15 +1,16 @@
 import HeroSection from "@/components/HeroSection";
 import ServicosSection from "@/components/ServicosSection";
+import AppHeader from "@/components/AppHeader";
 import { BARBEARIA_NOME } from "@/lib/constants";
 import { Scissors } from "lucide-react";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
+      <AppHeader />
       <HeroSection />
       <ServicosSection />
 
-      {/* Footer */}
       <footer className="border-t border-border py-8 text-center">
         <div className="flex items-center justify-center gap-2 text-primary mb-2">
           <Scissors className="h-5 w-5" />

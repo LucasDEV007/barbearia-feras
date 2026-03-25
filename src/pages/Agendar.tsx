@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
@@ -13,6 +12,7 @@ import { SERVICOS, BARBEARIA_NOME } from "@/lib/constants";
 import TimeSlotGrid from "@/components/TimeSlotGrid";
 import AgendamentoForm from "@/components/AgendamentoForm";
 import ConfirmacaoDialog from "@/components/ConfirmacaoDialog";
+import AppHeader from "@/components/AppHeader";
 
 const Agendar = () => {
   const [step, setStep] = useState(1);
@@ -82,15 +82,7 @@ const Agendar = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border px-4 py-4">
-        <div className="max-w-3xl mx-auto flex items-center gap-3">
-          <Link to="/">
-            <Button variant="ghost" size="icon"><ArrowLeft className="h-5 w-5" /></Button>
-          </Link>
-          <h1 className="text-xl font-bold text-primary">{BARBEARIA_NOME}</h1>
-        </div>
-      </header>
+      <AppHeader />
 
       <div className="max-w-3xl mx-auto px-4 py-8">
         {/* Progress steps */}
