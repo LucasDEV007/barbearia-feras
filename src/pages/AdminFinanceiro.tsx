@@ -54,14 +54,14 @@ const AdminFinanceiro = () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) { toast({ title: "Erro", description: "Faça login.", variant: "destructive" }); setSubmitting(false); return; }
 
-    const { error } = await supabase.from("despesas").insert({
+    const { error } = await supabase.from("despesas" as any).insert({
       descricao,
       valor: Number(valor),
       vencimento,
       categoria,
       pago,
       user_id: session.user.id,
-    });
+    } as any);
 
     setSubmitting(false);
     if (error) {
