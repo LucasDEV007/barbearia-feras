@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Scissors } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { BARBEARIA_NOME } from "@/lib/constants";
+import AppHeader from "@/components/AppHeader";
 
 const Login = () => {
   const [email, setEmail] = useState("");
