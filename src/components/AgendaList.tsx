@@ -86,16 +86,29 @@ const AgendaList = ({ agendamentos, onCancelar, onConcluir, loading, cancelando 
               </TableCell>
               <TableCell className="text-right">
                 {ag.status === "confirmado" && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onCancelar(ag.id)}
-                    disabled={cancelando === ag.id}
-                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                  >
-                    <X className="h-4 w-4 mr-1" />
-                    Cancelar
-                  </Button>
+                  <div className="flex gap-1 justify-end">
+                    {onConcluir && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onConcluir(ag.id)}
+                        className="text-success hover:text-success hover:bg-success/10"
+                      >
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        Concluir
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onCancelar(ag.id)}
+                      disabled={cancelando === ag.id}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Cancelar
+                    </Button>
+                  </div>
                 )}
               </TableCell>
             </TableRow>
