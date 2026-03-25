@@ -23,7 +23,7 @@ interface AgendaListProps {
   cancelando?: string | null;
 }
 
-const AgendaList = ({ agendamentos, onCancelar, loading, cancelando }: AgendaListProps) => {
+const AgendaList = ({ agendamentos, onCancelar, onConcluir, loading, cancelando }: AgendaListProps) => {
   const copiarTelefone = (telefone: string) => {
     navigator.clipboard.writeText(telefone);
     toast({ title: "Telefone copiado!", description: telefone });
