@@ -72,9 +72,6 @@ const Admin = () => {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-  };
 
   const confirmados = agendamentos.filter((a) => a.status === "confirmado").length;
   const cancelados = agendamentos.filter((a) => a.status === "cancelado").length;
