@@ -2,7 +2,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Copy, X } from "lucide-react";
+import { Copy, X, CheckCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface Agendamento {
@@ -18,11 +18,12 @@ interface Agendamento {
 interface AgendaListProps {
   agendamentos: Agendamento[];
   onCancelar: (id: string) => void;
+  onConcluir?: (id: string) => void;
   loading?: boolean;
   cancelando?: string | null;
 }
 
-const AgendaList = ({ agendamentos, onCancelar, loading, cancelando }: AgendaListProps) => {
+const AgendaList = ({ agendamentos, onCancelar, onConcluir, loading, cancelando }: AgendaListProps) => {
   const copiarTelefone = (telefone: string) => {
     navigator.clipboard.writeText(telefone);
     toast({ title: "Telefone copiado!", description: telefone });
@@ -85,16 +86,29 @@ const AgendaList = ({ agendamentos, onCancelar, loading, cancelando }: AgendaLis
               </TableCell>
               <TableCell className="text-right">
                 {ag.status === "confirmado" && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onCancelar(ag.id)}
-                    disabled={cancelando === ag.id}
-                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                  >
-                    <X className="h-4 w-4 mr-1" />
-                    Cancelar
-                  </Button>
+                  <div className="flex gap-1 justify-end">
+                    {onConcluir && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onConcluir(ag.id)}
+                        className="text-success hover:text-success hover:bg-success/10"
+                      >
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        Concluir
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onCancelar(ag.id)}
+                      disabled={cancelando === ag.id}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Cancelar
+                    </Button>
+                  </div>
                 )}
               </TableCell>
             </TableRow>
