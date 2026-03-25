@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
@@ -13,6 +12,7 @@ import { SERVICOS, BARBEARIA_NOME } from "@/lib/constants";
 import TimeSlotGrid from "@/components/TimeSlotGrid";
 import AgendamentoForm from "@/components/AgendamentoForm";
 import ConfirmacaoDialog from "@/components/ConfirmacaoDialog";
+import AppHeader from "@/components/AppHeader";
 
 const Agendar = () => {
   const [step, setStep] = useState(1);
