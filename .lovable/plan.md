@@ -1,131 +1,134 @@
 
 
-## Barbearia Feras — Plano de Implementação Completo
+## Melhorias Barbearia Feras — Plano de Implementação
 
-O projeto está vazio (página placeholder). Vamos construir tudo do zero.
+Baseado nas referências enviadas, o plano cobre: dashboard avançado, gestão de clientes, gestão financeira, automação WhatsApp e seção de localização.
 
 ---
 
-### 1. Setup Supabase
+### 1. Dashboard Admin Avançado (Visão Geral)
 
-**Conectar Supabase** ao projeto e criar:
+Redesenhar `/admin` com layout inspirado nas referências:
 
-**Migration 1 — Tabela `agendamentos`:**
+**KPI Cards (topo):**
+- Agendamentos Hoje, Atendimentos Concluídos, Faturamento Estimado, Ticket Médio, Faltas
+- Cada card com ícone, valor grande e indicador de variação
+
+**Seção Business Intelligence:**
+- Filtro por período (7, 15, 30 dias)
+- Cards: Faturamento Bruto, Total Despesas, Lucro Real, Atendimentos
+- Gráfico de Fluxo de Faturamento (Recharts line chart)
+- Mix de Serviços (top 5 serviços mais realizados)
+
+**Tabela de agendamentos** permanece abaixo, com filtro por data.
+
+**Database:** Criar tabela `atendimentos` para registrar serviços concluídos (permite calcular faturamento e estatísticas). Botão "Concluir" na lista de agendamentos para marcar como atendido.
+
+---
+
+### 2. Gestão de Clientes
+
+Nova página `/admin/clientes`:
+
+- Cards resumo: Total, Ativos, Novos, Taxa de Retorno
+- Busca por nome/telefone
+- Tabela: Cliente, Frequência, Última Visita, Ação (Ver)
+- Seção "Top Clientes" (mais receita gerada)
+
+**Database:** Criar tabela `clientes` (nome, telefone, created_at) — populada automaticamente a partir dos agendamentos. Ou calcular dinamicamente via queries na tabela `agendamentos`.
+
+---
+
+### 3. Gestão Financeira (Contas & Despesas)
+
+Nova página `/admin/financeiro`:
+
+- Header: "Contas & Despesas" com totais (A Pagar do Mês, Total Lançado)
+- Formulário "Novo Lançamento": descrição, valor, vencimento, categoria, checkbox "Já está pago?"
+- Filtros: Tudo, Pendentes, Pagos
+- Lista de gastos com status
+
+**Database:** Criar tabela `despesas` (descricao, valor, vencimento, categoria, pago boolean, user_id).
+
+---
+
+### 4. Automação WhatsApp
+
+**Fluxo:**
+1. Cliente confirma agendamento → Edge Function envia mensagem de confirmação imediata via Twilio/WhatsApp
+2. Cron job (pg_cron) roda a cada 5 minutos → busca agendamentos confirmados nos próximos 30min → envia lembrete
+3. Após horário do corte → envia mensagem de pós-venda/avaliação com link
+
+**Modelos de Mensagem** (página `/admin/mensagens`):
+- Confirmação Imediata
+- Lembrete de Agendamento (30min antes)
+- Pós-Venda / Avaliação
+
+**Database:** Criar tabela `mensagem_templates` (tipo, conteudo, ativo). Tabela `mensagens_enviadas` (agendamento_id, tipo, enviado_em) para evitar duplicatas.
+
+**Requisito:** Conectar Twilio via connector para envio de WhatsApp.
+
+---
+
+### 5. Seção de Localização (Landing Page)
+
+Adicionar seção antes do footer em `/`:
+
+- Título "Nossa Localização"
+- Endereço da barbearia (texto + ícone)
+- Embed Google Maps iframe com localização
+- Botões: "Como chegar" (abre Google Maps) e nome da unidade
+- Horário de funcionamento
+
+---
+
+### 6. Navegação Admin
+
+Adicionar sidebar ou tabs no admin para navegar entre:
+- Visão Geral (dashboard)
+- Agenda (lista atual)
+- Clientes
+- Financeiro
+- Mensagens/Lembretes
+
+---
+
+### Ordem de Implementação
+
+1. Seção de Localização na landing (rápido, visual)
+2. Dashboard Admin redesenhado com KPIs
+3. Migrations para novas tabelas (despesas, mensagem_templates, mensagens_enviadas)
+4. Gestão de Clientes
+5. Gestão Financeira
+6. Conectar Twilio + Edge Functions para WhatsApp
+7. Navegação admin com tabs/sidebar
+
+---
+
+### Detalhes Técnicos
+
+**Novas migrations:**
 ```sql
-CREATE TABLE agendamentos (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  nome_cliente text NOT NULL,
-  telefone text NOT NULL,
-  servico text NOT NULL,
-  data date NOT NULL,
-  horario text NOT NULL,
-  status text NOT NULL DEFAULT 'confirmado',
-  created_at timestamptz DEFAULT now(),
-  UNIQUE(data, horario, status) -- constraint parcial via index abaixo
-);
+-- Tabela despesas
+CREATE TABLE despesas (id uuid PK, descricao text, valor numeric, vencimento date, categoria text, pago boolean DEFAULT false, created_at timestamptz, user_id uuid);
 
--- Impedir dois agendamentos confirmados no mesmo horário
-CREATE UNIQUE INDEX idx_unique_agendamento_confirmado 
-  ON agendamentos (data, horario) WHERE status = 'confirmado';
+-- Tabela mensagem_templates
+CREATE TABLE mensagem_templates (id uuid PK, tipo text, conteudo text, ativo boolean DEFAULT true);
 
--- RLS
-ALTER TABLE agendamentos ENABLE ROW LEVEL SECURITY;
-
--- Qualquer um pode inserir (cliente)
-CREATE POLICY "Clientes podem agendar" ON agendamentos FOR INSERT WITH CHECK (true);
--- Qualquer um pode ler (para verificar disponibilidade)
-CREATE POLICY "Leitura pública" ON agendamentos FOR SELECT USING (true);
--- Apenas autenticados podem atualizar (cancelar)
-CREATE POLICY "Admin pode atualizar" ON agendamentos FOR UPDATE TO authenticated USING (true);
+-- Tabela mensagens_enviadas
+CREATE TABLE mensagens_enviadas (id uuid PK, agendamento_id uuid FK, tipo text, enviado_em timestamptz);
 ```
 
-**Autenticação:** Criar um usuário barbeiro via Supabase Auth (email/senha).
+**Edge Functions:**
+- `send-whatsapp`: recebe agendamento_id + tipo, busca template, envia via Twilio gateway
+- `check-reminders`: cron cada 5min, busca agendamentos próximos 30min, envia lembretes não enviados
 
----
-
-### 2. Tema Visual (Dark + Dourado)
-
-Atualizar `src/index.css` com tema escuro como padrão:
-- Background: tons escuros (#1a1a2e, #16213e)
-- Accent/Primary: dourado (#d4af37)
-- Cards: fundo escuro com borda dourada sutil
-
----
-
-### 3. Estrutura de Arquivos
-
-```text
-src/
-├── integrations/supabase/    # client + types (auto)
-├── lib/utils.ts
-├── pages/
-│   ├── Index.tsx             # Landing page
-│   ├── Agendar.tsx           # Agendamento
-│   ├── Admin.tsx             # Painel barbeiro
-│   └── Login.tsx             # Login admin
-├── components/
-│   ├── HeroSection.tsx       # Hero da landing
-│   ├── ServicosSection.tsx   # Cards de serviços
-│   ├── TimeSlotGrid.tsx      # Grade de horários (verde/vermelho)
-│   ├── AgendamentoForm.tsx   # Formulário nome+tel
-│   ├── AgendaList.tsx        # Lista de agendamentos (admin)
-│   ├── AgendaSummary.tsx     # Resumo do dia (admin)
-│   └── ConfirmacaoDialog.tsx # Dialog de confirmação
-└── App.tsx                   # Rotas
+**Novas rotas:**
 ```
-
----
-
-### 4. Páginas e Componentes
-
-**Landing (`/`):**
-- Hero com nome "Barbearia Feras", tagline, botão CTA dourado
-- Seção de serviços com preços em cards
-- Footer simples
-
-**Agendamento (`/agendar`):**
-- Step 1: Selecionar serviço (cards clicáveis)
-- Step 2: Selecionar data (Calendar component)
-- Step 3: Selecionar horário (grade 09:00-19:00, 30min)
-  - Verde = disponível, Vermelho = ocupado (busca Supabase)
-  - Horários ocupados desabilitados
-- Step 4: Formulário (nome, telefone)
-- Confirmação: Dialog com resumo (serviço, data, horário) + toast sucesso
-- Erro se horário já ocupado (constraint DB + feedback)
-
-**Login (`/login`):**
-- Formulário email/senha via Supabase Auth
-- Redireciona para `/admin`
-
-**Admin (`/admin`):**
-- Protegida (redireciona se não autenticado)
-- Filtro por data (datepicker)
-- Resumo: total de agendamentos do dia
-- Tabela com: horário, nome, telefone (com botão copiar), serviço, status
-- Ordenação automática por horário
-- Botão cancelar em cada linha (atualiza status para "cancelado")
-- Loading skeleton enquanto carrega
-- Botão logout
-
----
-
-### 5. Lógica Principal
-
-- **Buscar horários ocupados:** Query Supabase para data selecionada onde status = 'confirmado'
-- **Gerar grade:** Array de slots 09:00 a 19:00 (30min), marcando ocupados
-- **Inserir agendamento:** Insert com tratamento de erro de constraint unique
-- **Cancelar:** Update status para 'cancelado' (libera o horário)
-- **Copiar telefone:** `navigator.clipboard.writeText()`
-- **Loading:** Skeleton components durante fetches
-
----
-
-### 6. Rotas (App.tsx)
-
-```
-/         → Index (landing)
-/agendar  → Agendar
-/login    → Login
-/admin    → Admin (protegida)
+/admin          → Dashboard (Visão Geral)
+/admin/agenda   → Agenda do dia (existente)
+/admin/clientes → Gestão de Clientes
+/admin/financeiro → Contas & Despesas
+/admin/mensagens  → Modelos de Mensagem
 ```
 
