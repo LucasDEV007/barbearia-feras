@@ -7,6 +7,7 @@ interface TimeSlotGridProps {
   horarioSelecionado: string | null;
   onSelect: (horario: string) => void;
   loading?: boolean;
+  dataSelecionada?: Date;
 }
 
 const TimeSlotGrid = ({ horariosOcupados, horarioSelecionado, onSelect, loading }: TimeSlotGridProps) => {
