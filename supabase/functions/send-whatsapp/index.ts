@@ -72,18 +72,21 @@ Deno.serve(async (req) => {
       .replace(/\{\{horario\}\}/g, ag.horario)
       .replace(/\{\{link_avaliacao\}\}/g, `https://barbearia-feras.lovable.app/avaliar?id=${ag.id}`);
 
-    // Get Twilio phone number
-    const numbersRes = await fetch(`${GATEWAY_URL}/IncomingPhoneNumbers.json`, {
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "X-Connection-Api-Key": TWILIO_API_KEY,
-      },
-    });
-    const numbersData = await numbersRes.json();
-    const fromNumber = numbersData?.incoming_phone_numbers?.[0]?.phone_number;
-
-    if (!fromNumber) {
-      return new Response(JSON.stringify({ error: "Nenhum número Twilio configurado" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    // Try to get Twilio phone number, fall back to sandbox
+    let fromNumber = "+14155238886"; // Twilio WhatsApp Sandbox default
+    try {
+      const numbersRes = await fetch(`${GATEWAY_URL}/IncomingPhoneNumbers.json`, {
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "X-Connection-Api-Key": TWILIO_API_KEY,
+        },
+      });
+      const numbersData = await numbersRes.json();
+      if (numbersData?.incoming_phone_numbers?.[0]?.phone_number) {
+        fromNumber = numbersData.incoming_phone_numbers[0].phone_number;
+      }
+    } catch (e) {
+      console.log("Using sandbox number as fallback");
     }
 
     // Format phone for WhatsApp
