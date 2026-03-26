@@ -174,6 +174,7 @@ const Agendar = () => {
               horarioSelecionado={horario}
               onSelect={(h) => { setHorario(h); setStep(4); }}
               loading={loadingSlots}
+              dataSelecionada={data}
             />
             <Button variant="ghost" className="mt-4" onClick={() => setStep(2)}>← Voltar</Button>
           </div>
