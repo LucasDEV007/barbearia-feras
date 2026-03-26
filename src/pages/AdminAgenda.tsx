@@ -5,11 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Check } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+import { SERVICOS } from "@/lib/constants";
 import AgendaList from "@/components/AgendaList";
 import AgendaSummary from "@/components/AgendaSummary";
+import ConfirmacaoDialog from "@/components/ConfirmacaoDialog";
 
 interface Agendamento {
   id: string;
@@ -56,13 +58,32 @@ const AdminAgenda = () => {
   };
 
   const handleConcluir = async (id: string) => {
+    const ag = agendamentos.find((a) => a.id === id);
     const { error } = await supabase.from("agendamentos").update({ status: "concluido" }).eq("id", id);
     if (error) {
       toast({ title: "Erro", description: "Não foi possível concluir.", variant: "destructive" });
-    } else {
-      toast({ title: "Atendimento concluído! ✅" });
-      fetchAgendamentos();
+      return;
     }
+
+    // Auto-register revenue in financeiro
+    if (ag) {
+      const servicoInfo = SERVICOS.find((s) => s.nome === ag.servico);
+      const valor = servicoInfo?.preco ?? 0;
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData?.user?.id && valor > 0) {
+        await supabase.from("despesas").insert({
+          descricao: `${ag.servico} — ${ag.nome_cliente}`,
+          valor: -valor, // negative = revenue
+          vencimento: ag.data,
+          categoria: "receita",
+          user_id: userData.user.id,
+          pago: true,
+        });
+      }
+    }
+
+    toast({ title: "Atendimento concluído! ✅", description: "Valor registrado no financeiro." });
+    fetchAgendamentos();
   };
 
   const confirmados = agendamentos.filter((a) => a.status === "confirmado").length;
