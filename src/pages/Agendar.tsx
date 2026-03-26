@@ -46,13 +46,13 @@ const Agendar = () => {
     setSubmitting(true);
 
     const dataStr = format(data, "yyyy-MM-dd");
-    const { error } = await supabase.from("agendamentos").insert({
+    const { data: inserted, error } = await supabase.from("agendamentos").insert({
       nome_cliente: nome,
       telefone,
       servico,
       data: dataStr,
       horario,
-    });
+    }).select("id").single();
 
     setSubmitting(false);
 
@@ -68,9 +68,17 @@ const Agendar = () => {
       return;
     }
 
+    // Send WhatsApp confirmation (fire and forget)
+    if (inserted?.id) {
+      supabase.functions.invoke("send-whatsapp", {
+        body: { agendamento_id: inserted.id, tipo: "confirmacao" },
+      }).catch(() => {});
+    }
+
     const dataFormatada = format(data, "dd/MM/yyyy");
     setConfirmacao({ servico, data: dataFormatada, horario, nome });
     toast({ title: "✅ Agendamento realizado!", description: `${servico} em ${dataFormatada} às ${horario}` });
+  };
   };
 
   const steps = [
