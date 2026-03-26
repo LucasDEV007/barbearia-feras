@@ -38,20 +38,24 @@ const TimeSlotGrid = ({ horariosOcupados, horarioSelecionado, onSelect, loading,
     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
       {HORARIOS.map((horario) => {
         const ocupado = horariosOcupados.includes(horario);
+        const passado = isHorarioPassado(horario, dataSelecionada);
+        const indisponivel = ocupado || passado;
         const selecionado = horarioSelecionado === horario;
 
         return (
           <button
             key={horario}
-            disabled={ocupado}
+            disabled={indisponivel}
             onClick={() => onSelect(horario)}
             className={cn(
               "h-12 rounded-lg font-medium text-sm transition-all border",
-              ocupado
-                ? "bg-destructive/20 text-destructive border-destructive/30 cursor-not-allowed line-through opacity-60"
-                : selecionado
-                  ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/30"
-                  : "bg-card border-border text-foreground hover:border-primary/50 hover:bg-primary/10"
+              passado
+                ? "bg-muted text-muted-foreground border-border cursor-not-allowed line-through opacity-40"
+                : ocupado
+                  ? "bg-destructive/20 text-destructive border-destructive/30 cursor-not-allowed line-through opacity-60"
+                  : selecionado
+                    ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/30"
+                    : "bg-card border-border text-foreground hover:border-primary/50 hover:bg-primary/10"
             )}
           >
             {horario}
