@@ -10,7 +10,20 @@ interface TimeSlotGridProps {
   dataSelecionada?: Date;
 }
 
-const TimeSlotGrid = ({ horariosOcupados, horarioSelecionado, onSelect, loading }: TimeSlotGridProps) => {
+const isHoje = (date?: Date) => {
+  if (!date) return false;
+  const hoje = new Date();
+  return date.getFullYear() === hoje.getFullYear() && date.getMonth() === hoje.getMonth() && date.getDate() === hoje.getDate();
+};
+
+const isHorarioPassado = (horario: string, dataSelecionada?: Date) => {
+  if (!isHoje(dataSelecionada)) return false;
+  const agora = new Date();
+  const [h, m] = horario.split(":").map(Number);
+  return h < agora.getHours() || (h === agora.getHours() && m <= agora.getMinutes());
+};
+
+const TimeSlotGrid = ({ horariosOcupados, horarioSelecionado, onSelect, loading, dataSelecionada }: TimeSlotGridProps) => {
   if (loading) {
     return (
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
