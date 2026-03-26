@@ -79,7 +79,6 @@ const Agendar = () => {
     setConfirmacao({ servico, data: dataFormatada, horario, nome });
     toast({ title: "✅ Agendamento realizado!", description: `${servico} em ${dataFormatada} às ${horario}` });
   };
-  };
 
   const steps = [
     { num: 1, label: "Serviço" },
