@@ -2,6 +2,7 @@ import HeroSection from "@/components/HeroSection";
 import ServicosSection from "@/components/ServicosSection";
 import LocationSection from "@/components/LocationSection";
 import AppHeader from "@/components/AppHeader";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import { BARBEARIA_NOME } from "@/lib/constants";
 import { Scissors } from "lucide-react";
 
@@ -20,6 +21,7 @@ const Index = () => {
         </div>
         <p className="text-muted-foreground text-sm">© 2026 — Todos os direitos reservados</p>
       </footer>
+      <WhatsAppButton />
     </div>
   );
 };
