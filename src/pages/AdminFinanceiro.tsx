@@ -84,24 +84,42 @@ const AdminFinanceiro = () => {
     return true;
   });
 
-  const totalMes = despesas.reduce((s, d) => s + Number(d.valor), 0);
-  const pendente = despesas.filter((d) => !d.pago).reduce((s, d) => s + Number(d.valor), 0);
+  const receitas = despesas.filter((d) => d.categoria === "receita");
+  const despesasOnly = despesas.filter((d) => d.categoria !== "receita");
+  const totalReceitas = receitas.reduce((s, d) => s + Math.abs(Number(d.valor)), 0);
+  const totalDespesas = despesasOnly.reduce((s, d) => s + Math.abs(Number(d.valor)), 0);
+  const pendente = despesasOnly.filter((d) => !d.pago).reduce((s, d) => s + Math.abs(Number(d.valor)), 0);
+  const lucroReal = totalReceitas - totalDespesas;
 
   return (
     <div className="p-6 space-y-6">
       <h1 className="text-2xl font-bold text-foreground">Contas & Despesas</h1>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="bg-card border-border">
           <CardContent className="p-4">
-            <p className="text-xs text-muted-foreground">A Pagar</p>
-            <p className="text-xl font-bold text-destructive">R$ {pendente.toFixed(2)}</p>
+            <p className="text-xs text-muted-foreground">Lucro (Serviços)</p>
+            <p className="text-xl font-bold text-success">R$ {totalReceitas.toFixed(2)}</p>
           </CardContent>
         </Card>
         <Card className="bg-card border-border">
           <CardContent className="p-4">
-            <p className="text-xs text-muted-foreground">Total Lançado</p>
-            <p className="text-xl font-bold text-foreground">R$ {totalMes.toFixed(2)}</p>
+            <p className="text-xs text-muted-foreground">Despesas</p>
+            <p className="text-xl font-bold text-destructive">- R$ {totalDespesas.toFixed(2)}</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-card border-border">
+          <CardContent className="p-4">
+            <p className="text-xs text-muted-foreground">Lucro Real</p>
+            <p className={`text-xl font-bold ${lucroReal >= 0 ? "text-success" : "text-destructive"}`}>
+              {lucroReal < 0 ? "- " : ""}R$ {Math.abs(lucroReal).toFixed(2)}
+            </p>
+          </CardContent>
+        </Card>
+        <Card className="bg-card border-border">
+          <CardContent className="p-4">
+            <p className="text-xs text-muted-foreground">A Pagar</p>
+            <p className="text-xl font-bold text-destructive">- R$ {pendente.toFixed(2)}</p>
           </CardContent>
         </Card>
       </div>
