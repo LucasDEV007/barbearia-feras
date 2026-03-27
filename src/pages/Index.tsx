@@ -2,6 +2,7 @@ import HeroSection from "@/components/HeroSection";
 import ServicosSection from "@/components/ServicosSection";
 import LocationSection from "@/components/LocationSection";
 import AppHeader from "@/components/AppHeader";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import { BARBEARIA_NOME } from "@/lib/constants";
 import { Scissors } from "lucide-react";
 
