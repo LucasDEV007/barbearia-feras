@@ -111,7 +111,7 @@ const AdminDashboard = () => {
         <Card className="bg-card border-border">
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground">Faturamento Bruto</p>
-            <p className="text-xl font-bold text-primary">R$ {faturamento.toFixed(2)}</p>
+            <p className="text-xl font-bold text-success">R$ {faturamento.toFixed(2)}</p>
           </CardContent>
         </Card>
         <Card className="bg-card border-border">
@@ -123,7 +123,9 @@ const AdminDashboard = () => {
         <Card className="bg-card border-border">
           <CardContent className="p-4">
             <p className="text-xs text-muted-foreground">Lucro Real</p>
-            <p className="text-xl font-bold text-success">R$ {(faturamento - totalDespesas).toFixed(2)}</p>
+            <p className={`text-xl font-bold ${(faturamento - totalDespesas) >= 0 ? "text-success" : "text-destructive"}`}>
+              {(faturamento - totalDespesas) < 0 ? "- " : ""}R$ {Math.abs(faturamento - totalDespesas).toFixed(2)}
+            </p>
           </CardContent>
         </Card>
       </div>

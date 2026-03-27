@@ -73,7 +73,7 @@ const AdminAgenda = () => {
       if (userData?.user?.id && valor > 0) {
         await supabase.from("despesas").insert({
           descricao: `${ag.servico} — ${ag.nome_cliente}`,
-          valor: -valor, // negative = revenue
+          valor: valor,
           vencimento: ag.data,
           categoria: "receita",
           user_id: userData.user.id,
@@ -82,7 +82,7 @@ const AdminAgenda = () => {
       }
     }
 
-    toast({ title: "Atendimento concluído! ✅", description: "Valor registrado no financeiro." });
+    toast({ title: "Atendimento concluído! ✅", description: "Valor registrado no financeiro.", className: "bg-success text-success-foreground border-success" });
     fetchAgendamentos();
   };
 
