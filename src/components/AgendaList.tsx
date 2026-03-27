@@ -80,8 +80,11 @@ const AgendaList = ({ agendamentos, onCancelar, onConcluir, loading, cancelando 
               </TableCell>
               <TableCell>{ag.servico}</TableCell>
               <TableCell>
-                <Badge variant={ag.status === "confirmado" ? "default" : "destructive"} className={ag.status === "confirmado" ? "bg-success/20 text-success border-success/30" : ""}>
-                  {ag.status}
+                <Badge 
+                  variant={ag.status === "confirmado" ? "default" : ag.status === "concluido" ? "default" : "destructive"} 
+                  className={ag.status === "confirmado" ? "bg-success/20 text-success border-success/30" : ag.status === "concluido" ? "bg-success/20 text-success border-success/30" : ""}
+                >
+                  {ag.status.charAt(0).toUpperCase() + ag.status.slice(1)}
                 </Badge>
               </TableCell>
               <TableCell className="text-right">

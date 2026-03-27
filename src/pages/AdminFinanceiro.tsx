@@ -198,7 +198,9 @@ const AdminFinanceiro = () => {
                   <TableCell className="font-medium">{d.descricao}</TableCell>
                   <TableCell>{d.categoria}</TableCell>
                   <TableCell>{format(new Date(d.vencimento + "T12:00:00"), "dd/MM/yyyy")}</TableCell>
-                  <TableCell>R$ {Number(d.valor).toFixed(2)}</TableCell>
+                  <TableCell className={d.categoria === "receita" ? "text-success" : "text-destructive"}>
+                    {d.categoria === "receita" ? "" : "- "}R$ {Math.abs(Number(d.valor)).toFixed(2)}
+                  </TableCell>
                   <TableCell className="text-right">
                     <Badge
                       className="cursor-pointer"

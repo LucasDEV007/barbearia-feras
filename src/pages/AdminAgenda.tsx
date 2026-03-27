@@ -82,7 +82,7 @@ const AdminAgenda = () => {
       }
     }
 
-    toast({ title: "Atendimento concluído! ✅", description: "Valor registrado no financeiro." });
+    toast({ title: "Atendimento concluído! ✅", description: "Valor registrado no financeiro.", className: "bg-success text-success-foreground border-success" });
     fetchAgendamentos();
   };
 
