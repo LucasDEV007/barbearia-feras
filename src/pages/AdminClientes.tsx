@@ -28,7 +28,7 @@ const AdminClientes = () => {
   const [loading, setLoading] = useState(true);
   const [busca, setBusca] = useState("");
   const [filtro, setFiltro] = useState<"todos" | "ativos" | "inativos">("todos");
-  const [enviando, setEnviando] = useState<string | null>(null);
+  
 
   useEffect(() => {
     const fetchData = async () => {
