@@ -1,6 +1,7 @@
 import { MessageCircle } from "lucide-react";
+import { BARBEARIA_WHATSAPP } from "@/lib/constants";
 
-const WHATSAPP_NUMBER = "5585999999999"; // número da barbearia
+const WHATSAPP_NUMBER = BARBEARIA_WHATSAPP;
 
 const WhatsAppButton = () => {
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Olá! Vim pelo site e gostaria de informações sobre agendamento")}`;
