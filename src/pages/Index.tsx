@@ -14,6 +14,7 @@ const Index = () => {
       <HeroSection />
       <ServicosSection />
       <LocationSection />
+      <ReviewsSection />
 
       <footer className="border-t border-border py-8 text-center">
         <div className="flex items-center justify-center gap-2 text-primary mb-2">

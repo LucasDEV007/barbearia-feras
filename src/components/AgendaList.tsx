@@ -2,8 +2,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Copy, X, CheckCircle } from "lucide-react";
+import { Copy, X, CheckCircle, MessageCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { GOOGLE_REVIEW_LINK } from "@/lib/constants";
 
 interface Agendamento {
   id: string;
@@ -22,6 +23,13 @@ interface AgendaListProps {
   loading?: boolean;
   cancelando?: string | null;
 }
+
+const buildReviewWhatsAppUrl = (ag: Agendamento) => {
+  let phone = ag.telefone.replace(/\D/g, "");
+  if (!phone.startsWith("55")) phone = "55" + phone;
+  const msg = `Olá ${ag.nome_cliente}! Obrigado por escolher a Barbearia Feras. Como foi seu ${ag.servico} hoje? Se puder, deixe sua avaliação no Google: ${GOOGLE_REVIEW_LINK} ⭐`;
+  return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+};
 
 const AgendaList = ({ agendamentos, onCancelar, onConcluir, loading, cancelando }: AgendaListProps) => {
   const copiarTelefone = (telefone: string) => {
@@ -47,7 +55,6 @@ const AgendaList = ({ agendamentos, onCancelar, onConcluir, loading, cancelando 
     );
   }
 
-  // Sort by horario
   const sorted = [...agendamentos].sort((a, b) => a.horario.localeCompare(b.horario));
 
   return (
@@ -80,9 +87,9 @@ const AgendaList = ({ agendamentos, onCancelar, onConcluir, loading, cancelando 
               </TableCell>
               <TableCell>{ag.servico}</TableCell>
               <TableCell>
-                <Badge 
-                  variant={ag.status === "confirmado" ? "default" : ag.status === "concluido" ? "default" : "destructive"} 
-                  className={ag.status === "confirmado" ? "bg-success/20 text-success border-success/30" : ag.status === "concluido" ? "bg-success/20 text-success border-success/30" : ""}
+                <Badge
+                  variant={ag.status === "cancelado" ? "destructive" : "default"}
+                  className={ag.status !== "cancelado" ? "bg-success/20 text-success border-success/30" : ""}
                 >
                   {ag.status.charAt(0).toUpperCase() + ag.status.slice(1)}
                 </Badge>
@@ -112,6 +119,18 @@ const AgendaList = ({ agendamentos, onCancelar, onConcluir, loading, cancelando 
                       Cancelar
                     </Button>
                   </div>
+                )}
+                {ag.status === "concluido" && (
+                  <a href={buildReviewWhatsAppUrl(ag)} target="_blank" rel="noopener noreferrer">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs"
+                    >
+                      <MessageCircle className="h-3 w-3 mr-1" />
+                      Enviar pedido de avaliação
+                    </Button>
+                  </a>
                 )}
               </TableCell>
             </TableRow>
