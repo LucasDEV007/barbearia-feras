@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Users, UserPlus, RotateCcw, Search, UserX, MessageCircle, Loader2 } from "lucide-react";
+import { Users, UserPlus, RotateCcw, Search, UserX, MessageCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { SERVICOS } from "@/lib/constants";
@@ -28,7 +28,7 @@ const AdminClientes = () => {
   const [loading, setLoading] = useState(true);
   const [busca, setBusca] = useState("");
   const [filtro, setFiltro] = useState<"todos" | "ativos" | "inativos">("todos");
-  const [enviando, setEnviando] = useState<string | null>(null);
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -79,25 +79,13 @@ const AdminClientes = () => {
     fetchData();
   }, []);
 
-  const enviarPromocao = async (cliente: ClienteInfo) => {
-    setEnviando(cliente.telefone);
-    try {
-      let phone = cliente.telefone.replace(/\D/g, "");
-      if (!phone.startsWith("55")) phone = "55" + phone;
-
-      const msg = `Olá ${cliente.nome}! 🔥 Sentimos sua falta na Barbearia Feras! Faz ${cliente.diasSemVisita} dias desde sua última visita. Que tal agendar um horário? Acesse: https://barbearia-feras.lovable.app/agendar`;
-
-      const { error } = await supabase.functions.invoke("send-promo-whatsapp", {
-        body: { telefone: phone, mensagem: msg },
-      });
-
-      if (error) throw error;
-      toast({ title: "Mensagem enviada! 📩", description: `Promoção enviada para ${cliente.nome}` });
-    } catch (err: any) {
-      toast({ title: "Erro ao enviar", description: err.message || "Tente novamente", variant: "destructive" });
-    } finally {
-      setEnviando(null);
-    }
+  const abrirWhatsApp = (cliente: ClienteInfo) => {
+    let phone = cliente.telefone.replace(/\D/g, "");
+    if (!phone.startsWith("55")) phone = "55" + phone;
+    const msg = encodeURIComponent(
+      `Olá ${cliente.nome}, sentimos sua falta na Barbearia Feras! Que tal agendar seu próximo corte? 😃`
+    );
+    window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
   };
 
   const trinta = format(subDays(new Date(), 30), "yyyy-MM-dd");
@@ -206,16 +194,11 @@ const AdminClientes = () => {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => enviarPromocao(c)}
-                        disabled={enviando === c.telefone}
+                        onClick={() => abrirWhatsApp(c)}
                         className="text-xs"
                       >
-                        {enviando === c.telefone ? (
-                          <Loader2 className="h-3 w-3 animate-spin mr-1" />
-                        ) : (
-                          <MessageCircle className="h-3 w-3 mr-1" />
-                        )}
-                        Enviar promoção
+                        <MessageCircle className="h-3 w-3 mr-1" />
+                        Enviar mensagem
                       </Button>
                     )}
                   </TableCell>
