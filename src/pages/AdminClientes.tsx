@@ -79,25 +79,13 @@ const AdminClientes = () => {
     fetchData();
   }, []);
 
-  const enviarPromocao = async (cliente: ClienteInfo) => {
-    setEnviando(cliente.telefone);
-    try {
-      let phone = cliente.telefone.replace(/\D/g, "");
-      if (!phone.startsWith("55")) phone = "55" + phone;
-
-      const msg = `Olá ${cliente.nome}! 🔥 Sentimos sua falta na Barbearia Feras! Faz ${cliente.diasSemVisita} dias desde sua última visita. Que tal agendar um horário? Acesse: https://barbearia-feras.lovable.app/agendar`;
-
-      const { error } = await supabase.functions.invoke("send-promo-whatsapp", {
-        body: { telefone: phone, mensagem: msg },
-      });
-
-      if (error) throw error;
-      toast({ title: "Mensagem enviada! 📩", description: `Promoção enviada para ${cliente.nome}` });
-    } catch (err: any) {
-      toast({ title: "Erro ao enviar", description: err.message || "Tente novamente", variant: "destructive" });
-    } finally {
-      setEnviando(null);
-    }
+  const abrirWhatsApp = (cliente: ClienteInfo) => {
+    let phone = cliente.telefone.replace(/\D/g, "");
+    if (!phone.startsWith("55")) phone = "55" + phone;
+    const msg = encodeURIComponent(
+      `Olá ${cliente.nome}, sentimos sua falta na Barbearia Feras! Que tal agendar seu próximo corte? 😃`
+    );
+    window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
   };
 
   const trinta = format(subDays(new Date(), 30), "yyyy-MM-dd");
