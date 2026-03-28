@@ -194,16 +194,11 @@ const AdminClientes = () => {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => enviarPromocao(c)}
-                        disabled={enviando === c.telefone}
+                        onClick={() => abrirWhatsApp(c)}
                         className="text-xs"
                       >
-                        {enviando === c.telefone ? (
-                          <Loader2 className="h-3 w-3 animate-spin mr-1" />
-                        ) : (
-                          <MessageCircle className="h-3 w-3 mr-1" />
-                        )}
-                        Enviar promoção
+                        <MessageCircle className="h-3 w-3 mr-1" />
+                        Enviar mensagem
                       </Button>
                     )}
                   </TableCell>
