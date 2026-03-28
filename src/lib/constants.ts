@@ -13,3 +13,5 @@ export const HORARIOS = [
 ] as const;
 
 export const BARBEARIA_NOME = "Barbearia Feras";
+export const BARBEARIA_WHATSAPP = "5585999999999"; // Número da barbearia
+export const GOOGLE_REVIEW_LINK = "https://g.page/barbearia-feras/review"; // Link de avaliação Google

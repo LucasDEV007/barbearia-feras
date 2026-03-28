@@ -1,6 +1,7 @@
 import HeroSection from "@/components/HeroSection";
 import ServicosSection from "@/components/ServicosSection";
 import LocationSection from "@/components/LocationSection";
+import ReviewsSection from "@/components/ReviewsSection";
 import AppHeader from "@/components/AppHeader";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import { BARBEARIA_NOME } from "@/lib/constants";
@@ -13,6 +14,7 @@ const Index = () => {
       <HeroSection />
       <ServicosSection />
       <LocationSection />
+      <ReviewsSection />
 
       <footer className="border-t border-border py-8 text-center">
         <div className="flex items-center justify-center gap-2 text-primary mb-2">
