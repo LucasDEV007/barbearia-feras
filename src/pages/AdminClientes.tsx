@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Users, UserPlus, RotateCcw, Search, UserX, MessageCircle, Loader2 } from "lucide-react";
+import { Users, UserPlus, RotateCcw, Search, UserX, MessageCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { SERVICOS } from "@/lib/constants";
