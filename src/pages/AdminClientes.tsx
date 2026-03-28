@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { SERVICOS } from "@/lib/constants";
 import { format, subDays, differenceInDays } from "date-fns";
-import { toast } from "@/hooks/use-toast";
+
 
 const DIAS_INATIVO = 45;
 
