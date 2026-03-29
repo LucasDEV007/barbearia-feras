@@ -43,8 +43,9 @@ const buildGoogleCalendarUrl = (dados: { servico: string; data: string; horario:
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 };
 
-const buildWhatsAppUrl = (dados: { servico: string; data: string; horario: string; nome: string }) => {
-  const msg = `Olá! Sou ${dados.nome}.\n\nAcabei de realizar um agendamento na Barbearia Feras:\n\nServiço: ${dados.servico}\nData: ${dados.data}\nHorário: ${dados.horario}\n\nAté lá!`;
+const buildWhatsAppUrl = (dados: { servico: string; data: string; horario: string; nome: string; estilo?: string | null }) => {
+  const estiloText = dados.estilo ? `\nEstilo: ${dados.estilo}` : "";
+  const msg = `Olá! Sou ${dados.nome}.\n\nAcabei de realizar um agendamento na Barbearia Feras:\n\nServiço: ${dados.servico}${estiloText}\nData: ${dados.data}\nHorário: ${dados.horario}\n\nAté lá!`;
   return `https://wa.me/${BARBEARIA_WHATSAPP}?text=${encodeURIComponent(msg)}`;
 };
 
