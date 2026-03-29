@@ -6,10 +6,10 @@ import corteAmericano from "@/assets/corte-americano.jpg";
 import corteMoicano from "@/assets/corte-moicano.jpg";
 
 const ESTILOS = [
-  { nome: "Degradê", imagem: corteDegrade },
-  { nome: "Social", imagem: corteSocial },
-  { nome: "Americano", imagem: corteAmericano },
-  { nome: "Moicano", imagem: corteMoicano },
+  { nome: "Degradê", descricao: "Laterais em transição suave com topo mais volumoso.", imagem: corteDegrade },
+  { nome: "Social", descricao: "Corte clássico e elegante.", imagem: corteSocial },
+  { nome: "Americano", descricao: "Laterais curtas com topo médio estilizado.", imagem: corteAmericano },
+  { nome: "Moicano", descricao: "Laterais raspadas com faixa central mais longa.", imagem: corteMoicano },
 ] as const;
 
 const GaleriaCortes = () => {
@@ -32,20 +32,34 @@ const GaleriaCortes = () => {
           {ESTILOS.map((estilo) => (
             <div
               key={estilo.nome}
-              className="group rounded-xl overflow-hidden border border-border bg-card shadow-sm hover:shadow-lg transition-shadow"
+              className="group relative rounded-xl overflow-hidden border border-border bg-card shadow-sm hover:shadow-xl transition-all duration-300"
             >
-              <div className="aspect-square overflow-hidden">
+              <div className="aspect-[3/4] overflow-hidden relative">
                 <img
                   src={estilo.imagem}
                   alt={`Corte ${estilo.nome}`}
                   loading="lazy"
                   width={512}
-                  height={512}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  height={682}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                  <h3 className="text-white font-bold text-lg mb-1">{estilo.nome}</h3>
+                  <p className="text-white/80 text-sm mb-3 line-clamp-2">{estilo.descricao}</p>
+                  <Button
+                    size="sm"
+                    className="w-full font-semibold"
+                    onClick={() => handleEscolher(estilo.nome)}
+                  >
+                    Quero esse corte
+                  </Button>
+                </div>
               </div>
-              <div className="p-3 md:p-4 text-center space-y-2">
-                <h3 className="font-semibold text-foreground text-lg">{estilo.nome}</h3>
+              {/* Always visible on mobile */}
+              <div className="p-3 md:hidden text-center space-y-1.5">
+                <h3 className="font-semibold text-foreground">{estilo.nome}</h3>
+                <p className="text-xs text-muted-foreground">{estilo.descricao}</p>
                 <Button
                   size="sm"
                   className="w-full font-semibold"
