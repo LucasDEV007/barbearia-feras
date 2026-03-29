@@ -196,7 +196,7 @@ const AdminFinanceiro = () => {
               {filtered.map((d) => (
                 <TableRow key={d.id} className="border-border">
                   <TableCell className="font-medium">{d.descricao}</TableCell>
-                  <TableCell>{d.categoria}</TableCell>
+                  <TableCell>{d.categoria === "receita" ? "Receita" : d.categoria}</TableCell>
                   <TableCell>{format(new Date(d.vencimento + "T12:00:00"), "dd/MM/yyyy")}</TableCell>
                   <TableCell className={d.categoria === "receita" ? "text-success" : "text-destructive"}>
                     {d.categoria === "receita" ? "" : "- "}R$ {Math.abs(Number(d.valor)).toFixed(2)}
@@ -207,7 +207,7 @@ const AdminFinanceiro = () => {
                       variant={d.pago ? "default" : "destructive"}
                       onClick={() => togglePago(d.id, d.pago)}
                     >
-                      {d.pago ? "Pago" : "Pendente"}
+                      {d.pago ? (d.categoria === "receita" ? "Recebido" : "Pago") : "Pendente"}
                     </Badge>
                   </TableCell>
                 </TableRow>
