@@ -24,7 +24,7 @@ const items = [
   { title: "Agenda", url: "/admin/agenda", icon: CalendarDays },
   { title: "Clientes", url: "/admin/clientes", icon: Users },
   { title: "Financeiro", url: "/admin/financeiro", icon: DollarSign },
-  { title: "Mensagens", url: "/admin/mensagens", icon: MessageSquare },
+  { title: "Marketing", url: "/admin/marketing", icon: Megaphone },
 ];
 
 export function AdminSidebar() {
