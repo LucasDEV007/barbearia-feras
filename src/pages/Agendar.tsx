@@ -29,7 +29,7 @@ const Agendar = () => {
   const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [confirmacao, setConfirmacao] = useState<{ servico: string; data: string; horario: string; nome: string } | null>(null);
+  const [confirmacao, setConfirmacao] = useState<{ servico: string; data: string; horario: string; nome: string; estilo?: string | null } | null>(null);
 
   // Fetch occupied slots when date changes
   useEffect(() => {
@@ -80,7 +80,7 @@ const Agendar = () => {
 
 
     const dataFormatada = format(data, "dd/MM/yyyy");
-    setConfirmacao({ servico, data: dataFormatada, horario, nome });
+    setConfirmacao({ servico, data: dataFormatada, horario, nome, estilo });
     toast({ title: "✅ Agendamento realizado!", description: `${servico} em ${dataFormatada} às ${horario}` });
   };
 

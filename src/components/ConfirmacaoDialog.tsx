@@ -19,32 +19,33 @@ interface ConfirmacaoDialogProps {
     horario: string;
     nome: string;
     telefone?: string;
+    estilo?: string | null;
   } | null;
 }
 
-const buildGoogleCalendarUrl = (dados: { servico: string; data: string; horario: string; nome: string }) => {
-  // data is dd/MM/yyyy, horario is HH:mm
+const buildGoogleCalendarUrl = (dados: { servico: string; data: string; horario: string; nome: string; estilo?: string | null }) => {
   const [dd, mm, yyyy] = dados.data.split("/");
   const [hh, min] = dados.horario.split(":");
   const startDate = `${yyyy}${mm}${dd}T${hh}${min}00`;
-  // Add 30 min for end time
   const endMinutes = parseInt(min) + 30;
   const endHH = (parseInt(hh) + Math.floor(endMinutes / 60)).toString().padStart(2, "0");
   const endMM = (endMinutes % 60).toString().padStart(2, "0");
   const endDate = `${yyyy}${mm}${dd}T${endHH}${endMM}00`;
 
+  const estiloText = dados.estilo ? `\nEstilo: ${dados.estilo}` : "";
   const params = new URLSearchParams({
     action: "TEMPLATE",
     text: `Barbearia Feras - ${dados.servico}`,
-    details: `Agendamento de ${dados.nome}\nServiço: ${dados.servico}`,
+    details: `Agendamento de ${dados.nome}\nServiço: ${dados.servico}${estiloText}`,
     dates: `${startDate}/${endDate}`,
     location: "Barbearia Feras",
   });
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 };
 
-const buildWhatsAppUrl = (dados: { servico: string; data: string; horario: string; nome: string }) => {
-  const msg = `Olá! Sou ${dados.nome}.\n\nAcabei de realizar um agendamento na Barbearia Feras:\n\nServiço: ${dados.servico}\nData: ${dados.data}\nHorário: ${dados.horario}\n\nAté lá!`;
+const buildWhatsAppUrl = (dados: { servico: string; data: string; horario: string; nome: string; estilo?: string | null }) => {
+  const estiloText = dados.estilo ? `\nEstilo: ${dados.estilo}` : "";
+  const msg = `Olá! Sou ${dados.nome}.\n\nAcabei de realizar um agendamento na Barbearia Feras:\n\nServiço: ${dados.servico}${estiloText}\nData: ${dados.data}\nHorário: ${dados.horario}\n\nAté lá!`;
   return `https://wa.me/${BARBEARIA_WHATSAPP}?text=${encodeURIComponent(msg)}`;
 };
 
@@ -66,6 +67,12 @@ const ConfirmacaoDialog = ({ open, onClose, dados }: ConfirmacaoDialogProps) => 
             <span className="text-muted-foreground">Serviço</span>
             <span className="font-medium text-foreground">{dados.servico}</span>
           </div>
+          {dados.estilo && (
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Estilo</span>
+              <span className="font-medium text-foreground">{dados.estilo}</span>
+            </div>
+          )}
           <div className="flex justify-between">
             <span className="text-muted-foreground">Data</span>
             <span className="font-medium text-foreground">{dados.data}</span>
