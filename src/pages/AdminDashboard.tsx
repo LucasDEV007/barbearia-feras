@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, CheckCircle, DollarSign, TrendingUp, XCircle } from "lucide-react";
 import { SERVICOS } from "@/lib/constants";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 
 const COLORS = ["hsl(43,70%,53%)", "hsl(142,60%,40%)", "hsl(230,15%,55%)", "hsl(0,70%,50%)", "hsl(200,60%,50%)"];
 
