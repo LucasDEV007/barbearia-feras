@@ -118,26 +118,31 @@ const Agendar = () => {
             <h2 className="text-2xl font-bold text-foreground mb-6">Escolha o serviço</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {SERVICOS.map((s) => (
-                <Card
-                  key={s.nome}
-                  className={cn(
-                    "cursor-pointer transition-all hover:border-primary/50",
-                    servico === s.nome ? "border-primary bg-primary/10" : "bg-card border-border"
-                  )}
-                  onClick={() => { setServico(s.nome); setStep(2); }}
-                >
-                  <CardContent className="p-5 flex items-center gap-4">
-                    <span className="text-3xl">{s.icone}</span>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-foreground">{s.nome}</h3>
-                      <p className="text-sm text-muted-foreground">{s.descricao}</p>
-                    </div>
-                    <span className="text-lg font-bold text-primary">R$ {s.preco}</span>
-                  </CardContent>
-                </Card>
-              ))}
+                  <Card
+                    key={s.nome}
+                    className={cn(
+                      "cursor-pointer transition-all hover:border-primary/50",
+                      servico === s.nome ? "border-primary bg-primary/10" : "bg-card border-border"
+                    )}
+                    onClick={() => { setServico(s.nome); setStep(2); }}
+                  >
+                    <CardContent className="p-5 flex items-center gap-4">
+                      <span className="text-3xl">{s.icone}</span>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-foreground">{s.nome}</h3>
+                        <p className="text-sm text-muted-foreground">{s.descricao}</p>
+                      </div>
+                      <span className="text-lg font-bold text-primary">R$ {s.preco}</span>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              {estiloFromUrl && (
+                <p className="mt-4 text-sm text-muted-foreground">
+                  Estilo selecionado: <span className="font-medium text-foreground">{estiloFromUrl}</span>
+                </p>
+              )}
             </div>
-          </div>
         )}
 
         {/* Step 2: Date */}
