@@ -59,6 +59,7 @@ const Agendar = () => {
       servico,
       data: dataStr,
       horario,
+      estilo: estilo || null,
     }).select("id").single();
 
     setSubmitting(false);
