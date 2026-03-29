@@ -195,9 +195,33 @@ const Agendar = () => {
             <h2 className="text-2xl font-bold text-foreground mb-2">Seus dados</h2>
             <div className="bg-secondary rounded-lg p-4 mb-6 text-sm space-y-1">
               <p><span className="text-muted-foreground mr-2">Serviço:</span><span className="font-medium">{servico}</span></p>
+              {estilo && <p><span className="text-muted-foreground mr-2">Estilo:</span><span className="font-medium">{estilo}</span></p>}
               <p><span className="text-muted-foreground mr-2">Data:</span><span className="font-medium">{format(data, "dd/MM/yyyy")}</span></p>
               <p><span className="text-muted-foreground mr-2">Horário:</span><span className="font-medium">{horario}</span></p>
             </div>
+
+            {/* Estilo de corte selector */}
+            <div className="mb-6 max-w-md">
+              <label className="text-sm font-medium text-foreground mb-2 block">Estilo de corte (opcional)</label>
+              <div className="flex flex-wrap gap-2">
+                {ESTILOS.map((e) => (
+                  <button
+                    key={e}
+                    type="button"
+                    onClick={() => setEstilo(estilo === e ? null : e)}
+                    className={cn(
+                      "px-3 py-1.5 rounded-full text-sm font-medium border transition-colors",
+                      estilo === e
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-card text-muted-foreground border-border hover:border-primary/50"
+                    )}
+                  >
+                    {e}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <AgendamentoForm onSubmit={handleSubmit} loading={submitting} />
             <Button variant="ghost" className="mt-4" onClick={() => setStep(3)}>← Voltar</Button>
           </div>

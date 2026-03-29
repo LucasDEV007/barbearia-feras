@@ -88,6 +88,7 @@ const AgendaList = ({ agendamentos, onCancelar, onConcluir, loading, cancelando 
                 </button>
               </TableCell>
               <TableCell>{ag.servico}</TableCell>
+              <TableCell className="text-muted-foreground">{ag.estilo || "—"}</TableCell>
               <TableCell>
                 <Badge
                   variant={ag.status === "cancelado" ? "destructive" : "default"}
