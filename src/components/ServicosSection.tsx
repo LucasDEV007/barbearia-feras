@@ -12,7 +12,7 @@ const ServicosSection = () => {
           {SERVICOS.map((servico) => (
             <Card key={servico.nome} className="bg-card border-border hover:border-primary/50 transition-colors group">
               <CardContent className="p-6 text-center">
-                <span className="text-4xl mb-4 block">{servico.icone}</span>
+                
                 <h3 className="text-xl font-semibold text-foreground mb-1">{servico.nome}</h3>
                 <p className="text-muted-foreground text-sm mb-3">{servico.descricao}</p>
                 <p className="text-2xl font-bold text-primary">
