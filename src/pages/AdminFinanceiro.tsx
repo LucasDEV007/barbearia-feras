@@ -207,7 +207,7 @@ const AdminFinanceiro = () => {
                       variant={d.pago ? "default" : "destructive"}
                       onClick={() => togglePago(d.id, d.pago)}
                     >
-                      {d.pago ? "Pago" : "Pendente"}
+                      {d.pago ? (d.categoria === "receita" ? "Recebido" : "Pago") : "Pendente"}
                     </Badge>
                   </TableCell>
                 </TableRow>
