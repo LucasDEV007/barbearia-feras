@@ -67,6 +67,12 @@ const ConfirmacaoDialog = ({ open, onClose, dados }: ConfirmacaoDialogProps) => 
             <span className="text-muted-foreground">Serviço</span>
             <span className="font-medium text-foreground">{dados.servico}</span>
           </div>
+          {dados.estilo && (
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Estilo</span>
+              <span className="font-medium text-foreground">{dados.estilo}</span>
+            </div>
+          )}
           <div className="flex justify-between">
             <span className="text-muted-foreground">Data</span>
             <span className="font-medium text-foreground">{dados.data}</span>
