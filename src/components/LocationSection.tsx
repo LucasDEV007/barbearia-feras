@@ -2,8 +2,8 @@ import { MapPin, Clock, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const ENDERECO = "R. Prof. José Henrique, 1320 - Guajeru, Fortaleza - CE, 60843-270";
-const MAPS_EMBED = "https://maps.google.com/maps?q=R.+Prof.+Jos%C3%A9+Henrique,+1320+-+Guajeru,+Fortaleza+-+CE,+60843-270&t=&z=17&ie=UTF8&iwloc=&output=embed";
-const MAPS_LINK = "https://maps.app.goo.gl/2de33R82W4RfUdzG9";
+const MAPS_EMBED = "https://maps.google.com/maps?q=-3.8307956,-38.4782368&z=18&ie=UTF8&iwloc=B&output=embed";
+const MAPS_LINK = "https://www.google.com/maps/place/Fera's+Barbershop/@-3.8307902,-38.4808117,763m/data=!3m2!1e3!4b1!4m6!3m5!1s0x7c74553dc49b12b:0x599f5f0128ac8be5!8m2!3d-3.8307956!4d-38.4782368!16s%2Fg%2F11c6c99ljk?hl=pt-BR&entry=ttu&g_ep=EgoyMDI2MDMyNC4wIKXMDSoASAFQAw%3D%3D";
 
 const LocationSection = () => (
   <section className="py-16 px-4 bg-card/50">
