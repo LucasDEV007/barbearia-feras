@@ -44,7 +44,7 @@ const buildGoogleCalendarUrl = (dados: { servico: string; data: string; horario:
 };
 
 const buildWhatsAppUrl = (dados: { servico: string; data: string; horario: string; nome: string }) => {
-  const msg = `Olá! Sou ${dados.nome}, acabei de confirmar meu agendamento:\n\n✂️ Serviço: ${dados.servico}\n📅 Data: ${dados.data}\n🕐 Horário: ${dados.horario}\n\nAguardo confirmação!`;
+  const msg = `Olá! Sou ${dados.nome}.\n\nAcabei de realizar um agendamento na Barbearia Feras:\n\n✂️ Serviço: ${dados.servico}\n📅 Data: ${dados.data}\n⏰ Horário: ${dados.horario}\n\nAté lá! 💈`;
   return `https://wa.me/${BARBEARIA_WHATSAPP}?text=${encodeURIComponent(msg)}`;
 };
 
