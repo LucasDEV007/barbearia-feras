@@ -119,6 +119,7 @@ const Agendar = () => {
                   onClick={() => { setServico(s.nome); setStep(2); }}
                 >
                   <CardContent className="p-5 flex items-center gap-4">
+                    <span className="text-3xl">{s.icone}</span>
                     <div className="flex-1">
                       <h3 className="font-semibold text-foreground">{s.nome}</h3>
                       <p className="text-sm text-muted-foreground">{s.descricao}</p>

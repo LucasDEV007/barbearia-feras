@@ -1,8 +1,8 @@
 export const SERVICOS = [
-  { nome: "Corte", preco: 35, descricao: "Corte masculino moderno" },
-  { nome: "Barba", preco: 25, descricao: "Barba alinhada e hidratada" },
-  { nome: "Sobrancelha", preco: 15, descricao: "Design de sobrancelha" },
-  { nome: "Combo", preco: 50, descricao: "Corte + Barba completo" },
+  { nome: "Corte", preco: 35, descricao: "Corte masculino moderno", icone: "✂️" },
+  { nome: "Barba", preco: 25, descricao: "Barba alinhada e hidratada", icone: "🪒" },
+  { nome: "Sobrancelha", preco: 15, descricao: "Design de sobrancelha", icone: "👁️" },
+  { nome: "Combo", preco: 50, descricao: "Corte + Barba completo", icone: "💈" },
 ] as const;
 
 export const HORARIOS = [
