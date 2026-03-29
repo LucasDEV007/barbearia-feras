@@ -18,6 +18,7 @@ interface Agendamento {
   nome_cliente: string;
   telefone: string;
   servico: string;
+  estilo?: string | null;
   data: string;
   horario: string;
   status: string;

@@ -11,6 +11,7 @@ interface Agendamento {
   nome_cliente: string;
   telefone: string;
   servico: string;
+  estilo?: string | null;
   data: string;
   horario: string;
   status: string;
@@ -66,6 +67,7 @@ const AgendaList = ({ agendamentos, onCancelar, onConcluir, loading, cancelando 
             <TableHead className="text-primary">Cliente</TableHead>
             <TableHead className="text-primary">Telefone</TableHead>
             <TableHead className="text-primary">Serviço</TableHead>
+            <TableHead className="text-primary">Estilo</TableHead>
             <TableHead className="text-primary">Status</TableHead>
             <TableHead className="text-primary text-right">Ação</TableHead>
           </TableRow>
@@ -86,6 +88,7 @@ const AgendaList = ({ agendamentos, onCancelar, onConcluir, loading, cancelando 
                 </button>
               </TableCell>
               <TableCell>{ag.servico}</TableCell>
+              <TableCell className="text-muted-foreground">{ag.estilo || "—"}</TableCell>
               <TableCell>
                 <Badge
                   variant={ag.status === "cancelado" ? "destructive" : "default"}
