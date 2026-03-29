@@ -67,6 +67,7 @@ const AgendaList = ({ agendamentos, onCancelar, onConcluir, loading, cancelando 
             <TableHead className="text-primary">Cliente</TableHead>
             <TableHead className="text-primary">Telefone</TableHead>
             <TableHead className="text-primary">Serviço</TableHead>
+            <TableHead className="text-primary">Estilo</TableHead>
             <TableHead className="text-primary">Status</TableHead>
             <TableHead className="text-primary text-right">Ação</TableHead>
           </TableRow>
