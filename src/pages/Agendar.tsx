@@ -80,7 +80,7 @@ const Agendar = () => {
 
 
     const dataFormatada = format(data, "dd/MM/yyyy");
-    setConfirmacao({ servico, data: dataFormatada, horario, nome });
+    setConfirmacao({ servico, data: dataFormatada, horario, nome, estilo });
     toast({ title: "✅ Agendamento realizado!", description: `${servico} em ${dataFormatada} às ${horario}` });
   };
 
