@@ -1,8 +1,8 @@
 import { MapPin, Clock, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const ENDERECO = "Rua das Palmeiras, 123 — Centro, São Paulo - SP";
-const MAPS_EMBED = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3657.197547850021!2d-46.65342668502156!3d-23.56141698468097!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce59c8da0aa315%3A0xd59f9431f2c9776a!2sAv.%20Paulista%2C%20S%C3%A3o%20Paulo%20-%20SP!5e0!3m2!1spt-BR!2sbr!4v1700000000000";
+const ENDERECO = "R. Prof. José Henrique, 1320 - Guajeru, Fortaleza - CE, 60843-270";
+const MAPS_EMBED = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1990.6!2d-38.512!3d-3.799!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zRmVyYSdzIEJhcmJlcnNob3A!5e0!3m2!1spt-BR!2sbr!4v1700000000000";
 const MAPS_LINK = "https://maps.app.goo.gl/2de33R82W4RfUdzG9";
 
 const LocationSection = () => (
