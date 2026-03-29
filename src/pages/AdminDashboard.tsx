@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, CheckCircle, DollarSign, TrendingUp, XCircle } from "lucide-react";
 import { SERVICOS } from "@/lib/constants";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 
 const COLORS = ["hsl(43,70%,53%)", "hsl(142,60%,40%)", "hsl(230,15%,55%)", "hsl(0,70%,50%)", "hsl(200,60%,50%)"];
 
@@ -158,14 +158,15 @@ const AdminDashboard = () => {
           </CardHeader>
           <CardContent className="flex justify-center">
             {pieData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={220}>
+              <ResponsiveContainer width="100%" height={280}>
                 <PieChart>
-                  <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                  <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="45%" outerRadius={80} label={({ percent }) => `${(percent * 100).toFixed(0)}%`} labelLine={false}>
                     {pieData.map((_, i) => (
                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip contentStyle={{ background: "hsl(230,20%,14%)", border: "1px solid hsl(230,15%,22%)", borderRadius: 8 }} />
+                  <Legend verticalAlign="bottom" iconType="circle" wrapperStyle={{ fontSize: "12px" }} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
