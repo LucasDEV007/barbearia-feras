@@ -2,7 +2,7 @@ import { MapPin, Clock, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const ENDERECO = "R. Prof. José Henrique, 1320 - Guajeru, Fortaleza - CE, 60843-270";
-const MAPS_EMBED = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1990.6!2d-38.512!3d-3.799!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zRmVyYSdzIEJhcmJlcnNob3A!5e0!3m2!1spt-BR!2sbr!4v1700000000000";
+const MAPS_EMBED = "https://maps.google.com/maps?q=R.+Prof.+Jos%C3%A9+Henrique,+1320+-+Guajeru,+Fortaleza+-+CE,+60843-270&t=&z=17&ie=UTF8&iwloc=&output=embed";
 const MAPS_LINK = "https://maps.app.goo.gl/2de33R82W4RfUdzG9";
 
 const LocationSection = () => (
