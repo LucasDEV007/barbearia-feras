@@ -19,6 +19,7 @@ interface ConfirmacaoDialogProps {
     horario: string;
     nome: string;
     telefone?: string;
+    estilo?: string | null;
   } | null;
 }
 
