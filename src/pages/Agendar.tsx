@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useSearchParams } from "react-router-dom";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,9 +15,15 @@ import AgendamentoForm from "@/components/AgendamentoForm";
 import ConfirmacaoDialog from "@/components/ConfirmacaoDialog";
 import AppHeader from "@/components/AppHeader";
 
+const ESTILOS = ["Degradê", "Social", "Americano", "Moicano"] as const;
+
 const Agendar = () => {
+  const [searchParams] = useSearchParams();
+  const estiloFromUrl = searchParams.get("estilo");
+
   const [step, setStep] = useState(1);
   const [servico, setServico] = useState<string | null>(null);
+  const [estilo, setEstilo] = useState<string | null>(estiloFromUrl);
   const [data, setData] = useState<Date | undefined>();
   const [horario, setHorario] = useState<string | null>(null);
   const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]);
