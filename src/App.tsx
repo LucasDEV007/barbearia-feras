@@ -12,6 +12,7 @@ import AdminAgenda from "./pages/AdminAgenda";
 import AdminClientes from "./pages/AdminClientes";
 import AdminFinanceiro from "./pages/AdminFinanceiro";
 import AdminMarketing from "./pages/AdminMarketing";
+import AdminFidelidade from "./pages/AdminFidelidade";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
