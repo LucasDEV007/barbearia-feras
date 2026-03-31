@@ -83,6 +83,69 @@ export type Database = {
         }
         Relationships: []
       }
+      fidelidade_config: {
+        Row: {
+          ativo: boolean
+          beneficio: string
+          cortes_necessarios: number
+          created_at: string | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          beneficio?: string
+          cortes_necessarios?: number
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          beneficio?: string
+          cortes_necessarios?: number
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      fidelidade_pontos: {
+        Row: {
+          created_at: string | null
+          id: string
+          nome_cliente: string
+          pontos: number
+          recompensa_disponivel: boolean
+          recompensas_utilizadas: number
+          telefone: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          nome_cliente: string
+          pontos?: number
+          recompensa_disponivel?: boolean
+          recompensas_utilizadas?: number
+          telefone: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          nome_cliente?: string
+          pontos?: number
+          recompensa_disponivel?: boolean
+          recompensas_utilizadas?: number
+          telefone?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       mensagem_templates: {
         Row: {
           ativo: boolean
