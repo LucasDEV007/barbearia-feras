@@ -81,6 +81,46 @@ const AdminAgenda = () => {
           pago: true,
         });
       }
+
+      // Auto-add fidelity point
+      const { data: fidelidadeConfig } = await supabase
+        .from("fidelidade_config")
+        .select("*")
+        .eq("ativo", true)
+        .limit(1)
+        .maybeSingle();
+
+      if (fidelidadeConfig) {
+        const configTyped = fidelidadeConfig as unknown as { cortes_necessarios: number };
+        const { data: existingPonto } = await supabase
+          .from("fidelidade_pontos")
+          .select("*")
+          .eq("telefone", ag.telefone)
+          .maybeSingle();
+
+        if (existingPonto) {
+          const pontoTyped = existingPonto as unknown as { id: string; pontos: number; recompensas_utilizadas: number };
+          const novosPontos = pontoTyped.pontos + 1;
+          const recompensaDisponivel = novosPontos >= configTyped.cortes_necessarios;
+          await supabase
+            .from("fidelidade_pontos")
+            .update({
+              pontos: novosPontos,
+              recompensa_disponivel: recompensaDisponivel,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", pontoTyped.id);
+        } else {
+          const novosPontos = 1;
+          const recompensaDisponivel = novosPontos >= configTyped.cortes_necessarios;
+          await supabase.from("fidelidade_pontos").insert({
+            telefone: ag.telefone,
+            nome_cliente: ag.nome_cliente,
+            pontos: novosPontos,
+            recompensa_disponivel: recompensaDisponivel,
+          });
+        }
+      }
     }
 
     toast({ title: "Atendimento concluído! ✅", description: "Valor registrado no financeiro.", className: "bg-success text-success-foreground border-success" });
