@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, CheckCircle, DollarSign, TrendingUp, XCircle } from "lucide-react";
-import { SERVICOS } from "@/lib/constants";
+// Financial data comes from despesas table (same source as Financeiro)
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 
 const COLORS = ["hsl(43,70%,53%)", "hsl(142,60%,40%)", "hsl(230,15%,55%)", "hsl(0,70%,50%)", "hsl(200,60%,50%)"];
@@ -39,23 +39,18 @@ const AdminDashboard = () => {
   const concluidos = agendamentos.filter((a) => a.status === "concluido").length;
   const cancelados = agendamentos.filter((a) => a.status === "cancelado").length;
 
-  const precoMap: Record<string, number> = {};
-  SERVICOS.forEach((s) => (precoMap[s.nome] = s.preco));
+  // Use despesas table (same as Financeiro)
+  const receitas = despesas.filter((d: any) => d.categoria === "receita");
+  const despesasOnly = despesas.filter((d: any) => d.categoria !== "receita");
+  const faturamento = receitas.reduce((s: number, d: any) => s + Math.abs(Number(d.valor)), 0);
+  const totalDespesas = despesasOnly.reduce((s: number, d: any) => s + Math.abs(Number(d.valor)), 0);
+  const ticketMedio = receitas.length > 0 ? faturamento / receitas.length : 0;
 
-  const faturamento = agendamentos
-    .filter((a) => a.status === "concluido")
-    .reduce((sum, a) => sum + (precoMap[a.servico] || 0), 0);
-
-  const totalDespesas = despesas.reduce((sum, d) => sum + Number(d.valor), 0);
-  const ticketMedio = concluidos > 0 ? faturamento / concluidos : 0;
-
-  // Chart: revenue by day
+  // Chart: revenue by day (from despesas receitas)
   const revenueByDay: Record<string, number> = {};
-  agendamentos
-    .filter((a) => a.status === "concluido")
-    .forEach((a) => {
-      revenueByDay[a.data] = (revenueByDay[a.data] || 0) + (precoMap[a.servico] || 0);
-    });
+  receitas.forEach((d: any) => {
+    revenueByDay[d.vencimento] = (revenueByDay[d.vencimento] || 0) + Math.abs(Number(d.valor));
+  });
   const revenueChart = Object.entries(revenueByDay)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([data, valor]) => ({ data: format(new Date(data + "T12:00:00"), "dd/MM"), valor }));
