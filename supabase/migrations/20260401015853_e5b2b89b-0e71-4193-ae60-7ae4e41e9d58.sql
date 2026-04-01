@@ -1,0 +1,1 @@
+ALTER TABLE public.agendamentos ADD COLUMN beneficio_aplicado boolean NOT NULL DEFAULT false;

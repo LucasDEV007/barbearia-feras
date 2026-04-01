@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       agendamentos: {
         Row: {
+          beneficio_aplicado: boolean
           created_at: string | null
           data: string
           estilo: string | null
@@ -27,6 +28,7 @@ export type Database = {
           telefone: string
         }
         Insert: {
+          beneficio_aplicado?: boolean
           created_at?: string | null
           data: string
           estilo?: string | null
@@ -38,6 +40,7 @@ export type Database = {
           telefone: string
         }
         Update: {
+          beneficio_aplicado?: boolean
           created_at?: string | null
           data?: string
           estilo?: string | null
