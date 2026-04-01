@@ -15,6 +15,7 @@ interface Agendamento {
   data: string;
   horario: string;
   status: string;
+  beneficio_aplicado?: boolean;
 }
 
 interface AgendaListProps {
@@ -87,7 +88,14 @@ const AgendaList = ({ agendamentos, onCancelar, onConcluir, loading, cancelando 
                   <Copy className="h-3 w-3" />
                 </button>
               </TableCell>
-              <TableCell>{ag.servico}</TableCell>
+              <TableCell>
+                <div className="flex items-center gap-1">
+                  {ag.servico}
+                  {(ag as any).beneficio_aplicado && (
+                    <span title="Benefício de fidelidade aplicado" className="text-success">🎁</span>
+                  )}
+                </div>
+              </TableCell>
               <TableCell className="text-muted-foreground">{ag.estilo || "—"}</TableCell>
               <TableCell>
                 <Badge

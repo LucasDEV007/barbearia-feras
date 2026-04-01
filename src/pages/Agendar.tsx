@@ -48,7 +48,7 @@ const Agendar = () => {
     fetchOcupados();
   }, [data]);
 
-  const handleSubmit = async (nome: string, telefone: string) => {
+  const handleSubmit = async (nome: string, telefone: string, beneficioAplicado: boolean) => {
     if (!servico || !data || !horario) return;
     setSubmitting(true);
 
@@ -60,7 +60,8 @@ const Agendar = () => {
       data: dataStr,
       horario,
       estilo: estilo || null,
-    }).select("id").single();
+      beneficio_aplicado: beneficioAplicado,
+    } as any).select("id").single();
 
     setSubmitting(false);
 
