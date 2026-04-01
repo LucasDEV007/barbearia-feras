@@ -82,16 +82,9 @@ const AdminAgenda = () => {
         });
       }
 
-      // Auto-add fidelity point
-      const { data: fidelidadeConfig } = await supabase
-        .from("fidelidade_config")
-        .select("*")
-        .eq("ativo", true)
-        .limit(1)
-        .maybeSingle();
-
-      if (fidelidadeConfig) {
-        const configTyped = fidelidadeConfig as unknown as { cortes_necessarios: number };
+      // If this appointment used a reward, reset client points
+      const agAny = ag as any;
+      if (agAny.beneficio_aplicado) {
         const { data: existingPonto } = await supabase
           .from("fidelidade_pontos")
           .select("*")
@@ -99,26 +92,56 @@ const AdminAgenda = () => {
           .maybeSingle();
 
         if (existingPonto) {
-          const pontoTyped = existingPonto as unknown as { id: string; pontos: number; recompensas_utilizadas: number };
-          const novosPontos = pontoTyped.pontos + 1;
-          const recompensaDisponivel = novosPontos >= configTyped.cortes_necessarios;
+          const pontoTyped = existingPonto as unknown as { id: string; recompensas_utilizadas: number };
           await supabase
             .from("fidelidade_pontos")
             .update({
-              pontos: novosPontos,
-              recompensa_disponivel: recompensaDisponivel,
+              pontos: 0,
+              recompensa_disponivel: false,
+              recompensas_utilizadas: pontoTyped.recompensas_utilizadas + 1,
               updated_at: new Date().toISOString(),
             })
             .eq("id", pontoTyped.id);
-        } else {
-          const novosPontos = 1;
-          const recompensaDisponivel = novosPontos >= configTyped.cortes_necessarios;
-          await supabase.from("fidelidade_pontos").insert({
-            telefone: ag.telefone,
-            nome_cliente: ag.nome_cliente,
-            pontos: novosPontos,
-            recompensa_disponivel: recompensaDisponivel,
-          });
+        }
+      } else {
+        // Auto-add fidelity point (normal appointment)
+        const { data: fidelidadeConfig } = await supabase
+          .from("fidelidade_config")
+          .select("*")
+          .eq("ativo", true)
+          .limit(1)
+          .maybeSingle();
+
+        if (fidelidadeConfig) {
+          const configTyped = fidelidadeConfig as unknown as { cortes_necessarios: number };
+          const { data: existingPonto } = await supabase
+            .from("fidelidade_pontos")
+            .select("*")
+            .eq("telefone", ag.telefone)
+            .maybeSingle();
+
+          if (existingPonto) {
+            const pontoTyped = existingPonto as unknown as { id: string; pontos: number; recompensas_utilizadas: number };
+            const novosPontos = pontoTyped.pontos + 1;
+            const recompensaDisponivel = novosPontos >= configTyped.cortes_necessarios;
+            await supabase
+              .from("fidelidade_pontos")
+              .update({
+                pontos: novosPontos,
+                recompensa_disponivel: recompensaDisponivel,
+                updated_at: new Date().toISOString(),
+              })
+              .eq("id", pontoTyped.id);
+          } else {
+            const novosPontos = 1;
+            const recompensaDisponivel = novosPontos >= configTyped.cortes_necessarios;
+            await supabase.from("fidelidade_pontos").insert({
+              telefone: ag.telefone,
+              nome_cliente: ag.nome_cliente,
+              pontos: novosPontos,
+              recompensa_disponivel: recompensaDisponivel,
+            });
+          }
         }
       }
     }
