@@ -55,7 +55,7 @@ const AgendamentoForm = ({ onSubmit, loading }: AgendamentoFormProps) => {
           return;
         }
 
-        // Check if client has reward available
+        // Check if client has reward available — search with formatted phone
         const { data: ponto } = await supabase
           .from("fidelidade_pontos")
           .select("*")
@@ -88,6 +88,19 @@ const AgendamentoForm = ({ onSubmit, loading }: AgendamentoFormProps) => {
     if (nome.trim() && telefone.trim()) {
       onSubmit(nome.trim(), telefone.trim(), !!recompensa);
     }
+  };
+
+  // Parse benefit description for display
+  const getBeneficioDescricao = (beneficio: string) => {
+    const lower = beneficio.toLowerCase();
+    if (lower.includes("gratu") || lower.includes("grátis") || lower.includes("free")) {
+      return `🎉 Parabéns! Você ganhou: ${beneficio}! O valor será R$ 0,00.`;
+    }
+    const match = beneficio.match(/(\d+)\s*%/);
+    if (match) {
+      return `🎉 Parabéns! Você ganhou: ${beneficio}! O desconto será aplicado automaticamente.`;
+    }
+    return `🎉 Parabéns! Você ganhou: ${beneficio}!`;
   };
 
   return (
@@ -125,9 +138,8 @@ const AgendamentoForm = ({ onSubmit, loading }: AgendamentoFormProps) => {
         <div className="rounded-lg border border-success bg-success/10 p-4 flex items-start gap-3">
           <Gift className="h-5 w-5 text-success mt-0.5 shrink-0" />
           <div>
-            <p className="font-semibold text-success text-sm">🎉 Recompensa disponível!</p>
-            <p className="text-sm text-foreground mt-1">
-              Benefício: <span className="font-medium">{recompensa.beneficio}</span>
+            <p className="font-semibold text-success text-sm">
+              {getBeneficioDescricao(recompensa.beneficio)}
             </p>
             <Badge className="mt-2 bg-success/20 text-success border-success/30 text-xs">
               Será aplicado neste agendamento

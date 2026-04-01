@@ -25,6 +25,29 @@ interface Agendamento {
   beneficio_aplicado?: boolean;
 }
 
+/** Parse a benefit string and return the final price after applying it */
+const calcularValorComBeneficio = (valorOriginal: number, beneficio: string): number => {
+  const lower = beneficio.toLowerCase();
+  // Free benefit
+  if (lower.includes("gratu") || lower.includes("grátis") || lower.includes("free")) {
+    return 0;
+  }
+  // Percentage discount (e.g. "10% de desconto")
+  const match = beneficio.match(/(\d+)\s*%/);
+  if (match) {
+    const pct = Math.min(parseInt(match[1], 10), 100);
+    return Math.max(0, valorOriginal - (valorOriginal * pct) / 100);
+  }
+  // Fixed value discount (e.g. "R$10 de desconto")
+  const fixedMatch = beneficio.match(/R?\$?\s*(\d+(?:[.,]\d+)?)/i);
+  if (fixedMatch) {
+    const desconto = parseFloat(fixedMatch[1].replace(",", "."));
+    return Math.max(0, valorOriginal - desconto);
+  }
+  // Unknown format — give it for free as a safe default
+  return 0;
+};
+
 const AdminAgenda = () => {
   const [date, setDate] = useState<Date>(new Date());
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
@@ -67,14 +90,34 @@ const AdminAgenda = () => {
       return;
     }
 
-    // Auto-register revenue in financeiro
     if (ag) {
       const servicoInfo = SERVICOS.find((s) => s.nome === ag.servico);
-      const valor = servicoInfo?.preco ?? 0;
+      let valor = servicoInfo?.preco ?? 0;
+
+      // If benefit was applied, fetch the config to know what benefit and calculate discounted value
+      if (ag.beneficio_aplicado) {
+        const { data: fidelidadeConfig } = await supabase
+          .from("fidelidade_config")
+          .select("*")
+          .eq("ativo", true)
+          .limit(1)
+          .maybeSingle();
+
+        if (fidelidadeConfig) {
+          const configTyped = fidelidadeConfig as unknown as { beneficio: string };
+          valor = calcularValorComBeneficio(valor, configTyped.beneficio);
+        } else {
+          valor = 0; // Config not found but benefit was flagged — safe default
+        }
+      }
+
+      // Register revenue in financeiro
       const { data: userData } = await supabase.auth.getUser();
-      if (userData?.user?.id && valor > 0) {
+      if (userData?.user?.id) {
         await supabase.from("despesas").insert({
-          descricao: `${ag.servico} — ${ag.nome_cliente}`,
+          descricao: ag.beneficio_aplicado
+            ? `${ag.servico} — ${ag.nome_cliente} (benefício fidelidade)`
+            : `${ag.servico} — ${ag.nome_cliente}`,
           valor: valor,
           vencimento: ag.data,
           categoria: "receita",
@@ -84,8 +127,7 @@ const AdminAgenda = () => {
       }
 
       // If this appointment used a reward, reset client points
-      const agAny = ag as any;
-      if (agAny.beneficio_aplicado) {
+      if (ag.beneficio_aplicado) {
         const { data: existingPonto } = await supabase
           .from("fidelidade_pontos")
           .select("*")
@@ -147,7 +189,13 @@ const AdminAgenda = () => {
       }
     }
 
-    toast({ title: "Atendimento concluído! ✅", description: "Valor registrado no financeiro.", className: "bg-success text-success-foreground border-success" });
+    toast({
+      title: "Atendimento concluído! ✅",
+      description: ag?.beneficio_aplicado
+        ? "Benefício de fidelidade aplicado. Pontos resetados."
+        : "Valor registrado no financeiro.",
+      className: "bg-success text-success-foreground border-success",
+    });
     fetchAgendamentos();
   };
 
