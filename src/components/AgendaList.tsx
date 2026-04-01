@@ -15,6 +15,7 @@ interface Agendamento {
   data: string;
   horario: string;
   status: string;
+  beneficio_aplicado?: boolean;
 }
 
 interface AgendaListProps {
