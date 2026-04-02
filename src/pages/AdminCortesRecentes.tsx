@@ -26,11 +26,14 @@ const AdminCortesRecentes = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data: config } = await supabase
+    const { data: configs } = await supabase
       .from("cortes_recentes_config")
       .select("*")
       .eq("user_id", user.id)
-      .maybeSingle();
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    const config = configs?.[0] || null;
 
     if (config) {
       setAtivo(config.ativo);
@@ -56,8 +59,15 @@ const AdminCortesRecentes = () => {
     if (configId) {
       await supabase.from("cortes_recentes_config").update({ ativo: newAtivo, limite: newLimite, updated_at: new Date().toISOString() }).eq("id", configId);
     } else {
-      const { data } = await supabase.from("cortes_recentes_config").insert({ user_id: user.id, ativo: newAtivo, limite: newLimite }).select().single();
-      if (data) setConfigId(data.id);
+      // Check if config already exists for this user
+      const { data: existing } = await supabase.from("cortes_recentes_config").select("id").eq("user_id", user.id).limit(1).maybeSingle();
+      if (existing) {
+        setConfigId(existing.id);
+        await supabase.from("cortes_recentes_config").update({ ativo: newAtivo, limite: newLimite, updated_at: new Date().toISOString() }).eq("id", existing.id);
+      } else {
+        const { data } = await supabase.from("cortes_recentes_config").insert({ user_id: user.id, ativo: newAtivo, limite: newLimite }).select().single();
+        if (data) setConfigId(data.id);
+      }
     }
     toast({ title: "Configuração salva" });
   };
