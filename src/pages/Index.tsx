@@ -16,9 +16,9 @@ const Index = () => {
       <HeroSection />
       <ServicosSection />
       <GaleriaCortes />
-      <CortesRecentesSection />
       <LocationSection />
       <ReviewsSection />
+      <CortesRecentesSection />
 
       <footer className="border-t border-border py-8 text-center">
         <div className="flex items-center justify-center gap-2 text-primary mb-2">
