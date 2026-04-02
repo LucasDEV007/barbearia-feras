@@ -26,11 +26,14 @@ const AdminCortesRecentes = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data: config } = await supabase
+    const { data: configs } = await supabase
       .from("cortes_recentes_config")
       .select("*")
       .eq("user_id", user.id)
-      .maybeSingle();
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    const config = configs?.[0] || null;
 
     if (config) {
       setAtivo(config.ativo);
