@@ -53,6 +53,60 @@ export type Database = {
         }
         Relationships: []
       }
+      cortes_recentes: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          estilo: string | null
+          id: string
+          imagem_url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          estilo?: string | null
+          id?: string
+          imagem_url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          estilo?: string | null
+          id?: string
+          imagem_url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      cortes_recentes_config: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          id: string
+          limite: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          limite?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          limite?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       despesas: {
         Row: {
           categoria: string
