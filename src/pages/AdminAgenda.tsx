@@ -206,7 +206,7 @@ const AdminAgenda = () => {
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-foreground">
-          Agenda — {format(date, "dd 'de' MMMM, yyyy", { locale: ptBR }).replace(/de (\w)/, (_, l) => `de ${l.toUpperCase()}`)}
+          Agenda — {format(date, "dd 'de' MMMM, yyyy", { locale: ptBR }).replace(/(^|\s)\w/g, (l) => l.toUpperCase())}
         </h1>
         <Popover>
           <PopoverTrigger asChild>
