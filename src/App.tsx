@@ -13,6 +13,7 @@ import AdminClientes from "./pages/AdminClientes";
 import AdminFinanceiro from "./pages/AdminFinanceiro";
 import AdminMarketing from "./pages/AdminMarketing";
 import AdminFidelidade from "./pages/AdminFidelidade";
+import AdminCortesRecentes from "./pages/AdminCortesRecentes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
