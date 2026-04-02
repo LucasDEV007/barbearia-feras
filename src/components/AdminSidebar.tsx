@@ -26,6 +26,7 @@ const items = [
   { title: "Financeiro", url: "/admin/financeiro", icon: DollarSign },
   { title: "Marketing", url: "/admin/marketing", icon: Megaphone },
   { title: "Fidelidade", url: "/admin/fidelidade", icon: Gift },
+  { title: "Cortes Recentes", url: "/admin/cortes-recentes", icon: Camera },
 ];
 
 export function AdminSidebar() {
