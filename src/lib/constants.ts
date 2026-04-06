@@ -7,15 +7,15 @@ export interface Servico {
 }
 
 export const SERVICOS: Servico[] = [
-  { nome: "Corte masculino", preco: 30, duracao: 30, descricao: "Corte masculino tradicional ou moderno, feito com atenção aos detalhes e acabamento profissional.", icone: "✂️" },
-  { nome: "Barba", preco: 15, duracao: 20, descricao: "Modelagem e alinhamento da barba com navalha e máquina para um visual mais limpo.", icone: "🪒" },
-  { nome: "Corte feminino", preco: 35, duracao: 30, descricao: "Corte feminino personalizado, respeitando o estilo e preferência da cliente.", icone: "💇‍♀️" },
-  { nome: "Aplicação de tinta", preco: 30, duracao: 30, descricao: "Aplicação de coloração para renovar ou mudar o visual do cabelo.", icone: "🎨" },
-  { nome: "Reflexo", preco: 70, duracao: 120, descricao: "Técnica de iluminação do cabelo que cria reflexos naturais e modernos.", icone: "✨" },
-  { nome: "Nevou / Platinado", preco: 100, duracao: 130, descricao: "Processo de descoloração para alcançar o efeito platinado ou nevado.", icone: "❄️" },
-  { nome: "Pigmentação", preco: 15, duracao: 20, descricao: "Aplicação de pigmento para reforçar ou restaurar a cor do cabelo ou barba.", icone: "🖌️" },
-  { nome: "Alisamento térmico", preco: 70, duracao: 100, descricao: "Procedimento para reduzir o volume e deixar o cabelo mais liso.", icone: "🔥" },
-  { nome: "Sobrancelha unissex", preco: 10, duracao: 10, descricao: "Limpeza e modelagem da sobrancelha para melhorar o visual.", icone: "👁️" },
+  { nome: "Corte masculino", preco: 30, duracao: 30, descricao: "Corte masculino tradicional ou moderno, feito com atenção aos detalhes e acabamento profissional.", icone: "Scissors" },
+  { nome: "Barba", preco: 15, duracao: 20, descricao: "Modelagem e alinhamento da barba com navalha e máquina para um visual mais limpo.", icone: "Scissors" },
+  { nome: "Corte feminino", preco: 35, duracao: 30, descricao: "Corte feminino personalizado, respeitando o estilo e preferência da cliente.", icone: "Sparkles" },
+  { nome: "Aplicação de tinta", preco: 30, duracao: 30, descricao: "Aplicação de coloração para renovar ou mudar o visual do cabelo.", icone: "Palette" },
+  { nome: "Reflexo", preco: 70, duracao: 120, descricao: "Técnica de iluminação do cabelo que cria reflexos naturais e modernos.", icone: "Sparkles" },
+  { nome: "Nevou / Platinado", preco: 100, duracao: 130, descricao: "Processo de descoloração para alcançar o efeito platinado ou nevado.", icone: "Snowflake" },
+  { nome: "Pigmentação", preco: 15, duracao: 20, descricao: "Aplicação de pigmento para reforçar ou restaurar a cor do cabelo ou barba.", icone: "Droplet" },
+  { nome: "Alisamento térmico", preco: 70, duracao: 100, descricao: "Procedimento para reduzir o volume e deixar o cabelo mais liso.", icone: "Flame" },
+  { nome: "Sobrancelha unissex", preco: 10, duracao: 10, descricao: "Limpeza e modelagem da sobrancelha para melhorar o visual.", icone: "Eye" },
 ];
 
 /** Horários de funcionamento por dia da semana (0=Domingo, 1=Segunda, ..., 6=Sábado) */
