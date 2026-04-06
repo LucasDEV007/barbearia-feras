@@ -5,24 +5,52 @@ import { useSearchParams } from "react-router-dom";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { ChevronRight, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { SERVICOS } from "@/lib/constants";
+import { SERVICOS, Servico } from "@/lib/constants";
 import TimeSlotGrid from "@/components/TimeSlotGrid";
 import AgendamentoForm from "@/components/AgendamentoForm";
 import ConfirmacaoDialog from "@/components/ConfirmacaoDialog";
 import AppHeader from "@/components/AppHeader";
+import { Scissors, Sparkles, Palette, Snowflake, Droplet, Flame, Eye } from "lucide-react";
+
+const iconMap: Record<string, any> = {
+  Scissors, Sparkles, Palette, Snowflake, Droplet, Flame, Eye,
+};
 
 const ESTILOS = ["Degradê", "Social", "Americano", "Moicano"] as const;
+
+/** Given existing bookings with their services, compute all blocked 30-min slots */
+function calcularSlotsOcupados(agendamentos: { horario: string; servico: string }[]): string[] {
+  const blocked = new Set<string>();
+  for (const ag of agendamentos) {
+    const [h, m] = ag.horario.split(":").map(Number);
+    const inicio = h * 60 + m;
+    // Sum durations of all services in this booking
+    const nomes = ag.servico.split(", ");
+    let duracao = 0;
+    for (const nome of nomes) {
+      const s = SERVICOS.find((sv) => sv.nome === nome.trim());
+      duracao += s ? s.duracao : 30;
+    }
+    // Block every 30-min slot the service spans
+    for (let t = inicio; t < inicio + duracao; t += 30) {
+      const hh = Math.floor(t / 60).toString().padStart(2, "0");
+      const mm = (t % 60).toString().padStart(2, "0");
+      blocked.add(`${hh}:${mm}`);
+    }
+  }
+  return Array.from(blocked);
+}
 
 const Agendar = () => {
   const [searchParams] = useSearchParams();
   const estiloFromUrl = searchParams.get("estilo");
 
   const [step, setStep] = useState(1);
-  const [servico, setServico] = useState<string | null>(null);
+  const [servicosSelecionados, setServicosSelecionados] = useState<string[]>([]);
   const [estilo, setEstilo] = useState<string | null>(estiloFromUrl);
   const [data, setData] = useState<Date | undefined>();
   const [horario, setHorario] = useState<string | null>(null);
@@ -30,6 +58,12 @@ const Agendar = () => {
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [confirmacao, setConfirmacao] = useState<{ servico: string; data: string; horario: string; nome: string; estilo?: string | null } | null>(null);
+
+  // Computed values
+  const servicosInfo = servicosSelecionados.map((nome) => SERVICOS.find((s) => s.nome === nome)!).filter(Boolean);
+  const duracaoTotal = servicosInfo.reduce((acc, s) => acc + s.duracao, 0);
+  const precoTotal = servicosInfo.reduce((acc, s) => acc + s.preco, 0);
+  const servicoTexto = servicosSelecionados.join(", ");
 
   // Fetch occupied slots when date changes
   useEffect(() => {
@@ -39,24 +73,31 @@ const Agendar = () => {
       const dataStr = format(data, "yyyy-MM-dd");
       const { data: agendamentos } = await supabase
         .from("agendamentos")
-        .select("horario")
+        .select("horario, servico")
         .eq("data", dataStr)
         .eq("status", "confirmado");
-      setHorariosOcupados(agendamentos?.map((a) => a.horario) || []);
+      const blocked = calcularSlotsOcupados(agendamentos || []);
+      setHorariosOcupados(blocked);
       setLoadingSlots(false);
     };
     fetchOcupados();
   }, [data]);
 
+  const toggleServico = (nome: string) => {
+    setServicosSelecionados((prev) =>
+      prev.includes(nome) ? prev.filter((n) => n !== nome) : [...prev, nome]
+    );
+  };
+
   const handleSubmit = async (nome: string, telefone: string, beneficioAplicado: boolean) => {
-    if (!servico || !data || !horario) return;
+    if (servicosSelecionados.length === 0 || !data || !horario) return;
     setSubmitting(true);
 
     const dataStr = format(data, "yyyy-MM-dd");
-    const { data: inserted, error } = await supabase.from("agendamentos").insert({
+    const { error } = await supabase.from("agendamentos").insert({
       nome_cliente: nome,
       telefone,
-      servico,
+      servico: servicoTexto,
       data: dataStr,
       horario,
       estilo: estilo || null,
@@ -77,12 +118,9 @@ const Agendar = () => {
       return;
     }
 
-
-
-
     const dataFormatada = format(data, "dd/MM/yyyy");
-    setConfirmacao({ servico, data: dataFormatada, horario, nome, estilo });
-    toast({ title: "✅ Agendamento realizado!", description: `${servico} em ${dataFormatada} às ${horario}` });
+    setConfirmacao({ servico: servicoTexto, data: dataFormatada, horario, nome, estilo });
+    toast({ title: "✅ Agendamento realizado!", description: `${servicoTexto} em ${dataFormatada} às ${horario}` });
   };
 
   const steps = [
@@ -113,37 +151,64 @@ const Agendar = () => {
           ))}
         </div>
 
-        {/* Step 1: Service */}
+        {/* Step 1: Service selection (multi) */}
         {step === 1 && (
           <div>
-            <h2 className="text-2xl font-bold text-foreground mb-6">Escolha o serviço</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-2">Escolha os serviços</h2>
+            <p className="text-muted-foreground mb-6">Selecione um ou mais serviços e clique em continuar.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {SERVICOS.map((s) => (
+              {SERVICOS.map((s) => {
+                const selected = servicosSelecionados.includes(s.nome);
+                const IconComponent = iconMap[s.icone];
+                return (
                   <Card
                     key={s.nome}
                     className={cn(
-                      "cursor-pointer transition-all hover:border-primary/50",
-                      servico === s.nome ? "border-primary bg-primary/10" : "bg-card border-border"
+                      "cursor-pointer transition-all hover:border-primary/50 relative",
+                      selected ? "border-primary bg-primary/10" : "bg-card border-border"
                     )}
-                    onClick={() => { setServico(s.nome); setStep(2); }}
+                    onClick={() => toggleServico(s.nome)}
                   >
                     <CardContent className="p-5 flex items-center gap-4">
-                      <span className="text-3xl">{s.icone}</span>
+                      <div className="text-primary">
+                        {IconComponent ? <IconComponent size={28} /> : <span className="text-3xl">{s.icone}</span>}
+                      </div>
                       <div className="flex-1">
                         <h3 className="font-semibold text-foreground">{s.nome}</h3>
-                        <p className="text-sm text-muted-foreground">{s.descricao}</p>
+                        <p className="text-sm text-muted-foreground">{s.duracao} min</p>
                       </div>
                       <span className="text-lg font-bold text-primary">R$ {s.preco}</span>
+                      {selected && (
+                        <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-0.5">
+                          <Check className="h-4 w-4" />
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
-                ))}
-              </div>
-              {estiloFromUrl && (
-                <p className="mt-4 text-sm text-muted-foreground">
-                  Estilo selecionado: <span className="font-medium text-foreground">{estiloFromUrl}</span>
-                </p>
-              )}
+                );
+              })}
             </div>
+
+            {servicosSelecionados.length > 0 && (
+              <div className="mt-6 bg-secondary rounded-lg p-4 flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    {servicosSelecionados.length} serviço{servicosSelecionados.length > 1 ? "s" : ""} selecionado{servicosSelecionados.length > 1 ? "s" : ""}
+                  </p>
+                  <p className="text-foreground font-semibold">
+                    Duração total: {duracaoTotal} min · R$ {precoTotal}
+                  </p>
+                </div>
+                <Button onClick={() => setStep(2)}>Continuar</Button>
+              </div>
+            )}
+
+            {estiloFromUrl && (
+              <p className="mt-4 text-sm text-muted-foreground">
+                Estilo selecionado: <span className="font-medium text-foreground">{estiloFromUrl}</span>
+              </p>
+            )}
+          </div>
         )}
 
         {/* Step 2: Date */}
@@ -168,7 +233,8 @@ const Agendar = () => {
         {step === 3 && data && (
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-2">Escolha o horário</h2>
-            <p className="text-muted-foreground mb-6">{format(data, "EEEE, dd 'de' MMMM", { locale: ptBR }).replace(/(^|\s)\w/g, (l) => l.toUpperCase())}</p>
+            <p className="text-muted-foreground mb-1">{format(data, "EEEE, dd 'de' MMMM", { locale: ptBR }).replace(/(^|\s)\w/g, (l) => l.toUpperCase())}</p>
+            <p className="text-sm text-muted-foreground mb-6">Duração total: {duracaoTotal} minutos</p>
             <div className="flex items-center gap-4 mb-6 text-sm">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded bg-card border border-border" />
@@ -185,18 +251,20 @@ const Agendar = () => {
               onSelect={(h) => { setHorario(h); setStep(4); }}
               loading={loadingSlots}
               dataSelecionada={data}
-              duracaoServico={SERVICOS.find(s => s.nome === servico)?.duracao ?? 30}
+              duracaoServico={duracaoTotal || 30}
             />
             <Button variant="ghost" className="mt-4" onClick={() => setStep(2)}>← Voltar</Button>
           </div>
         )}
 
         {/* Step 4: Form */}
-        {step === 4 && data && horario && servico && (
+        {step === 4 && data && horario && servicosSelecionados.length > 0 && (
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-2">Seus dados</h2>
             <div className="bg-secondary rounded-lg p-4 mb-6 text-sm space-y-1">
-              <p><span className="text-muted-foreground mr-2">Serviço:</span><span className="font-medium">{servico}</span></p>
+              <p><span className="text-muted-foreground mr-2">Serviços:</span><span className="font-medium">{servicoTexto}</span></p>
+              <p><span className="text-muted-foreground mr-2">Duração:</span><span className="font-medium">{duracaoTotal} min</span></p>
+              <p><span className="text-muted-foreground mr-2">Valor:</span><span className="font-medium">R$ {precoTotal}</span></p>
               {estilo && <p><span className="text-muted-foreground mr-2">Estilo:</span><span className="font-medium">{estilo}</span></p>}
               <p><span className="text-muted-foreground mr-2">Data:</span><span className="font-medium">{format(data, "dd/MM/yyyy")}</span></p>
               <p><span className="text-muted-foreground mr-2">Horário:</span><span className="font-medium">{horario}</span></p>
