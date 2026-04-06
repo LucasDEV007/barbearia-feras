@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SERVICOS } from "@/lib/constants";
 import { Scissors, Sparkles, Palette, Snowflake, Droplet, Flame, Eye } from "lucide-react";
 
-const iconMap: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
+const iconMap: Record<string, any> = {
   Scissors,
   Sparkles,
   Palette,
