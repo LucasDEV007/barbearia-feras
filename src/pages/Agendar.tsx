@@ -155,7 +155,7 @@ const Agendar = () => {
                 mode="single"
                 selected={data}
                 onSelect={(d) => { setData(d); if (d) { setHorario(null); setStep(3); } }}
-                disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0)) || date.getDay() === 0}
+                disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                 locale={ptBR}
                 className="rounded-lg border border-border bg-card p-3 pointer-events-auto"
               />
