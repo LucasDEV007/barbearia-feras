@@ -185,6 +185,7 @@ const Agendar = () => {
               onSelect={(h) => { setHorario(h); setStep(4); }}
               loading={loadingSlots}
               dataSelecionada={data}
+              duracaoServico={SERVICOS.find(s => s.nome === servico)?.duracao ?? 30}
             />
             <Button variant="ghost" className="mt-4" onClick={() => setStep(2)}>← Voltar</Button>
           </div>
