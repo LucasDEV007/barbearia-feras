@@ -9,7 +9,7 @@ import { ArrowLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { SERVICOS, BARBEARIA_NOME } from "@/lib/constants";
+import { SERVICOS } from "@/lib/constants";
 import TimeSlotGrid from "@/components/TimeSlotGrid";
 import AgendamentoForm from "@/components/AgendamentoForm";
 import ConfirmacaoDialog from "@/components/ConfirmacaoDialog";
@@ -155,7 +155,7 @@ const Agendar = () => {
                 mode="single"
                 selected={data}
                 onSelect={(d) => { setData(d); if (d) { setHorario(null); setStep(3); } }}
-                disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0)) || date.getDay() === 0}
+                disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
                 locale={ptBR}
                 className="rounded-lg border border-border bg-card p-3 pointer-events-auto"
               />
@@ -185,6 +185,7 @@ const Agendar = () => {
               onSelect={(h) => { setHorario(h); setStep(4); }}
               loading={loadingSlots}
               dataSelecionada={data}
+              duracaoServico={SERVICOS.find(s => s.nome === servico)?.duracao ?? 30}
             />
             <Button variant="ghost" className="mt-4" onClick={() => setStep(2)}>← Voltar</Button>
           </div>

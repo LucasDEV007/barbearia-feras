@@ -1,4 +1,4 @@
-import { HORARIOS } from "@/lib/constants";
+import { gerarHorarios } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -8,6 +8,7 @@ interface TimeSlotGridProps {
   onSelect: (horario: string) => void;
   loading?: boolean;
   dataSelecionada?: Date;
+  duracaoServico?: number;
 }
 
 const isHoje = (date?: Date) => {
@@ -23,20 +24,28 @@ const isHorarioPassado = (horario: string, dataSelecionada?: Date) => {
   return h < agora.getHours() || (h === agora.getHours() && m <= agora.getMinutes());
 };
 
-const TimeSlotGrid = ({ horariosOcupados, horarioSelecionado, onSelect, loading, dataSelecionada }: TimeSlotGridProps) => {
+const TimeSlotGrid = ({ horariosOcupados, horarioSelecionado, onSelect, loading, dataSelecionada, duracaoServico = 30 }: TimeSlotGridProps) => {
+  const horarios = dataSelecionada
+    ? gerarHorarios(dataSelecionada.getDay(), duracaoServico)
+    : [];
+
   if (loading) {
     return (
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-        {Array.from({ length: 21 }).map((_, i) => (
+        {Array.from({ length: 12 }).map((_, i) => (
           <Skeleton key={i} className="h-12 rounded-lg" />
         ))}
       </div>
     );
   }
 
+  if (horarios.length === 0) {
+    return <p className="text-muted-foreground text-center py-8">Nenhum horário disponível neste dia.</p>;
+  }
+
   return (
     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-      {HORARIOS.map((horario) => {
+      {horarios.map((horario) => {
         const ocupado = horariosOcupados.includes(horario);
         const passado = isHorarioPassado(horario, dataSelecionada);
         const indisponivel = ocupado || passado;
