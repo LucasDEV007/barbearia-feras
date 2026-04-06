@@ -9,7 +9,7 @@ import { ArrowLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { SERVICOS, BARBEARIA_NOME } from "@/lib/constants";
+import { SERVICOS } from "@/lib/constants";
 import TimeSlotGrid from "@/components/TimeSlotGrid";
 import AgendamentoForm from "@/components/AgendamentoForm";
 import ConfirmacaoDialog from "@/components/ConfirmacaoDialog";
