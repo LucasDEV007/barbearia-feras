@@ -13,5 +13,5 @@ export const HORARIOS = [
 ] as const;
 
 export const BARBEARIA_NOME = "Barbearia Feras";
-export const BARBEARIA_WHATSAPP = "5585992946781"; // Número da barbearia
+export const BARBEARIA_WHATSAPP = "5585985653388"; // Número da barbearia
 export const GOOGLE_REVIEW_LINK = "https://maps.app.goo.gl/2de33R82W4RfUdzG9";
