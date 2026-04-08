@@ -91,8 +91,12 @@ const AdminAgenda = () => {
     }
 
     if (ag) {
-      const servicoInfo = SERVICOS.find((s) => s.nome === ag.servico);
-      let valor = servicoInfo?.preco ?? 0;
+      // Sum prices of all services (supports comma-separated multi-service bookings)
+      const nomes = ag.servico.split(", ").map((n) => n.trim());
+      let valor = nomes.reduce((sum, nome) => {
+        const s = SERVICOS.find((sv) => sv.nome === nome);
+        return sum + (s?.preco ?? 0);
+      }, 0);
 
       // If benefit was applied, fetch the config to know what benefit and calculate discounted value
       if (ag.beneficio_aplicado) {
