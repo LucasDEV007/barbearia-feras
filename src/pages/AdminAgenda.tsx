@@ -118,10 +118,12 @@ const AdminAgenda = () => {
       // Register revenue in financeiro
       const { data: userData } = await supabase.auth.getUser();
       if (userData?.user?.id) {
+        const capitalize = (str: string) => str.replace(/\b\w/g, (c) => c.toUpperCase());
+        const descBase = `${ag.servico} — ${ag.nome_cliente}`;
         await supabase.from("despesas").insert({
           descricao: ag.beneficio_aplicado
-            ? `${ag.servico} — ${ag.nome_cliente} (benefício fidelidade)`
-            : `${ag.servico} — ${ag.nome_cliente}`,
+            ? capitalize(`${descBase} (benefício fidelidade)`)
+            : capitalize(descBase),
           valor: valor,
           vencimento: ag.data,
           categoria: "receita",
