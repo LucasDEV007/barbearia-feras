@@ -48,9 +48,12 @@ function calcularSlotsOcupados(agendamentos: { horario: string; servico: string 
 const Agendar = () => {
   const [searchParams] = useSearchParams();
   const estiloFromUrl = searchParams.get("estilo");
+  const servicoFromUrl = searchParams.get("servico");
 
   const [step, setStep] = useState(1);
-  const [servicosSelecionados, setServicosSelecionados] = useState<string[]>([]);
+  const [servicosSelecionados, setServicosSelecionados] = useState<string[]>(
+    servicoFromUrl ? [servicoFromUrl] : []
+  );
   const [estilo, setEstilo] = useState<string | null>(estiloFromUrl);
   const [data, setData] = useState<Date | undefined>();
   const [horario, setHorario] = useState<string | null>(null);
