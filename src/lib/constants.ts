@@ -49,7 +49,7 @@ export function gerarHorarios(diaSemana: number, duracaoServico: number = 30): s
     const inicioMin = hi * 60 + mi;
     const fimMin = hf * 60 + mf;
 
-    for (let t = inicioMin; t + duracaoServico <= fimMin; t += 30) {
+    for (let t = inicioMin; t + duracaoServico <= fimMin + 30; t += 30) {
       const h = Math.floor(t / 60);
       const m = t % 60;
       slots.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
