@@ -91,8 +91,12 @@ const AdminAgenda = () => {
     }
 
     if (ag) {
-      const servicoInfo = SERVICOS.find((s) => s.nome === ag.servico);
-      let valor = servicoInfo?.preco ?? 0;
+      // Sum prices of all services (supports comma-separated multi-service bookings)
+      const nomes = ag.servico.split(", ").map((n) => n.trim());
+      let valor = nomes.reduce((sum, nome) => {
+        const s = SERVICOS.find((sv) => sv.nome === nome);
+        return sum + (s?.preco ?? 0);
+      }, 0);
 
       // If benefit was applied, fetch the config to know what benefit and calculate discounted value
       if (ag.beneficio_aplicado) {
@@ -114,10 +118,12 @@ const AdminAgenda = () => {
       // Register revenue in financeiro
       const { data: userData } = await supabase.auth.getUser();
       if (userData?.user?.id) {
+        const capitalize = (str: string) => str.replace(/\b\w/g, (c) => c.toUpperCase());
+        const descBase = `${ag.servico} — ${ag.nome_cliente}`;
         await supabase.from("despesas").insert({
           descricao: ag.beneficio_aplicado
-            ? `${ag.servico} — ${ag.nome_cliente} (benefício fidelidade)`
-            : `${ag.servico} — ${ag.nome_cliente}`,
+            ? capitalize(`${descBase} (benefício fidelidade)`)
+            : capitalize(descBase),
           valor: valor,
           vencimento: ag.data,
           categoria: "receita",
