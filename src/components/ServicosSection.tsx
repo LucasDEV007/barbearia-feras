@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { SERVICOS } from "@/lib/constants";
 import { Scissors, Sparkles, Palette, Snowflake, Droplet, Flame, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const iconMap: Record<string, any> = {
   Scissors,
@@ -13,6 +14,8 @@ const iconMap: Record<string, any> = {
 };
 
 const ServicosSection = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="py-20 px-4">
       <div className="max-w-6xl mx-auto">
@@ -23,7 +26,11 @@ const ServicosSection = () => {
           {SERVICOS.map((servico) => {
             const IconComponent = iconMap[servico.icone];
             return (
-              <Card key={servico.nome} className="bg-card border-border hover:border-primary/50 transition-colors group">
+              <Card
+                key={servico.nome}
+                className="bg-card border-border hover:border-primary/50 transition-colors group cursor-pointer"
+                onClick={() => navigate(`/agendar?servico=${encodeURIComponent(servico.nome)}`)}
+              >
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
                     <div className="mt-1 text-primary">
