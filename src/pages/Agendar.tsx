@@ -236,7 +236,7 @@ const Agendar = () => {
         {step === 3 && data && (
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-2">Escolha o horário</h2>
-            <p className="text-muted-foreground mb-1">{format(data, "EEEE, dd 'de' MMMM", { locale: ptBR }).replace(/(^|\s)\w/g, (l) => l.toUpperCase())}</p>
+            <p className="text-muted-foreground mb-1">{format(data, "EEEE, dd 'de' MMMM", { locale: ptBR }).replace(/^./, (l) => l.toUpperCase())}</p>
             <p className="text-sm text-muted-foreground mb-6">Duração total: {duracaoTotal} minutos</p>
             <div className="flex items-center gap-4 mb-6 text-sm">
               <div className="flex items-center gap-2">
