@@ -152,7 +152,8 @@ const Agendar = () => {
         horario,
         estilo: p.estilo || null,
         beneficio_aplicado: false,
-      } as any);
+      });
+      console.log("Insert result for", p.nome, ":", error ? error.message : "OK");
 
       if (error) {
         if (error.code === "23505") {
