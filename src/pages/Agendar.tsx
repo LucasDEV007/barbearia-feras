@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronRight, Minus, Plus, Loader2 } from "lucide-react";
+import { ChevronRight, Minus, Plus, Loader2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -15,7 +15,6 @@ import { SERVICOS } from "@/lib/constants";
 import TimeSlotGrid from "@/components/TimeSlotGrid";
 import ConfirmacaoDialog from "@/components/ConfirmacaoDialog";
 import AppHeader from "@/components/AppHeader";
-import AgendamentoForm from "@/components/AgendamentoForm";
 import { Scissors, Sparkles, Palette, Snowflake, Droplet, Flame, Eye } from "lucide-react";
 
 const iconMap: Record<string, any> = {
@@ -24,7 +23,6 @@ const iconMap: Record<string, any> = {
 
 const ESTILOS = ["Degradê", "Social", "Americano", "Moicano"] as const;
 
-/** Map of service name → quantity */
 type ServicoQuantidades = Record<string, number>;
 
 function calcularSlotsOcupados(agendamentos: { horario: string; servico: string }[]): string[] {
@@ -62,8 +60,6 @@ function calcPrecoTotal(qtds: ServicoQuantidades): number {
 }
 
 function buildServicoTexto(qtds: ServicoQuantidades): string {
-  // Expand quantities into repeated names for DB compatibility
-  // e.g. { "Corte masculino": 2, "Barba": 1 } → "Corte masculino, Corte masculino, Barba"
   const parts: string[] = [];
   for (const [nome, qty] of Object.entries(qtds)) {
     for (let i = 0; i < qty; i++) parts.push(nome);
@@ -76,11 +72,13 @@ const Agendar = () => {
   const estiloFromUrl = searchParams.get("estilo");
   const servicoFromUrl = searchParams.get("servico");
 
-  const initialQtds: ServicoQuantidades = {};
-  if (servicoFromUrl) initialQtds[servicoFromUrl] = 1;
-
-  const [step, setStep] = useState(servicoFromUrl ? 1 : 1);
-  const [quantidades, setQuantidades] = useState<ServicoQuantidades>(initialQtds);
+  const [step, setStep] = useState(1);
+  // Step 1: just selected service names
+  const [servicosSelecionados, setServicosSelecionados] = useState<string[]>(
+    servicoFromUrl ? [servicoFromUrl] : []
+  );
+  // Step 4: quantities per selected service (default 1)
+  const [quantidades, setQuantidades] = useState<ServicoQuantidades>({});
   const [data, setData] = useState<Date | undefined>();
   const [horario, setHorario] = useState<string | null>(null);
   const [nome, setNome] = useState("");
@@ -93,9 +91,29 @@ const Agendar = () => {
 
   const duracaoTotal = calcDuracaoTotal(quantidades);
   const precoTotal = calcPrecoTotal(quantidades);
-  const temServico = Object.values(quantidades).some((q) => q > 0);
+  const temServico = servicosSelecionados.length > 0;
 
-  // Fetch occupied slots
+  // Initialize quantities when entering step 4
+  useEffect(() => {
+    if (step === 4) {
+      setQuantidades((prev) => {
+        const updated: ServicoQuantidades = {};
+        for (const nome of servicosSelecionados) {
+          updated[nome] = prev[nome] || 1;
+        }
+        return updated;
+      });
+    }
+  }, [step, servicosSelecionados]);
+
+  // For step 3: compute duration based on selected services (qty=1 each) for slot availability
+  const duracaoParaSlots = step < 4
+    ? servicosSelecionados.reduce((acc, nome) => {
+        const s = SERVICOS.find((sv) => sv.nome === nome);
+        return acc + (s ? s.duracao : 30);
+      }, 0)
+    : duracaoTotal;
+
   useEffect(() => {
     if (!data) return;
     const fetchOcupados = async () => {
@@ -112,17 +130,17 @@ const Agendar = () => {
     fetchOcupados();
   }, [data]);
 
+  const toggleServico = (nome: string) => {
+    setServicosSelecionados((prev) =>
+      prev.includes(nome) ? prev.filter((n) => n !== nome) : [...prev, nome]
+    );
+  };
+
   const setQty = (nome: string, delta: number) => {
     setQuantidades((prev) => {
-      const current = prev[nome] || 0;
-      const next = Math.max(0, Math.min(4, current + delta));
-      const updated = { ...prev };
-      if (next === 0) {
-        delete updated[nome];
-      } else {
-        updated[nome] = next;
-      }
-      return updated;
+      const current = prev[nome] || 1;
+      const next = Math.max(1, Math.min(4, current + delta));
+      return { ...prev, [nome]: next };
     });
   };
 
@@ -209,26 +227,27 @@ const Agendar = () => {
           ))}
         </div>
 
-        {/* Step 1: Services with quantity */}
+        {/* Step 1: Select services (simple toggle) */}
         {step === 1 && (
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-2">Escolha os serviços</h2>
-            <p className="text-muted-foreground mb-6">Selecione os serviços e a quantidade desejada.</p>
+            <p className="text-muted-foreground mb-6">Toque nos serviços desejados para selecioná-los.</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {SERVICOS.map((s) => {
-                const qty = quantidades[s.nome] || 0;
+                const selected = servicosSelecionados.includes(s.nome);
                 const IconComponent = iconMap[s.icone];
                 return (
                   <Card
                     key={s.nome}
+                    onClick={() => toggleServico(s.nome)}
                     className={cn(
-                      "transition-all relative",
-                      qty > 0 ? "border-primary bg-primary/10" : "bg-card border-border"
+                      "transition-all cursor-pointer relative",
+                      selected ? "border-primary bg-primary/10" : "bg-card border-border hover:border-primary/30"
                     )}
                   >
                     <CardContent className="p-5">
-                      <div className="flex items-center gap-4 mb-3">
+                      <div className="flex items-center gap-4">
                         <div className="text-primary">
                           {IconComponent ? <IconComponent size={28} /> : <span className="text-3xl">{s.icone}</span>}
                         </div>
@@ -237,39 +256,11 @@ const Agendar = () => {
                           <p className="text-xs text-muted-foreground">{s.descricao}</p>
                           <p className="text-sm text-muted-foreground mt-1">{s.duracao} min · R$ {s.preco}</p>
                         </div>
-                      </div>
-                      {/* Quantity selector */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Quantidade:</span>
-                        <div className="flex items-center gap-3">
-                          <button
-                            type="button"
-                            onClick={() => setQty(s.nome, -1)}
-                            disabled={qty === 0}
-                            className={cn(
-                              "w-8 h-8 rounded-full flex items-center justify-center border transition-colors",
-                              qty === 0
-                                ? "border-border text-muted-foreground opacity-40 cursor-not-allowed"
-                                : "border-primary text-primary hover:bg-primary/10"
-                            )}
-                          >
-                            <Minus className="h-4 w-4" />
-                          </button>
-                          <span className="w-6 text-center font-bold text-foreground text-lg">{qty}</span>
-                          <button
-                            type="button"
-                            onClick={() => setQty(s.nome, 1)}
-                            disabled={qty >= 4}
-                            className={cn(
-                              "w-8 h-8 rounded-full flex items-center justify-center border transition-colors",
-                              qty >= 4
-                                ? "border-border text-muted-foreground opacity-40 cursor-not-allowed"
-                                : "border-primary text-primary hover:bg-primary/10"
-                            )}
-                          >
-                            <Plus className="h-4 w-4" />
-                          </button>
-                        </div>
+                        {selected && (
+                          <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center">
+                            <Check className="h-4 w-4 text-primary-foreground" />
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -277,26 +268,11 @@ const Agendar = () => {
               })}
             </div>
 
-            {/* Summary bar */}
             {temServico && (
-              <div className="mt-6 bg-secondary rounded-lg p-4">
-                <div className="space-y-1 mb-3 text-sm">
-                  {Object.entries(quantidades).map(([nome, qty]) => {
-                    const s = SERVICOS.find((sv) => sv.nome === nome);
-                    if (!s) return null;
-                    return (
-                      <p key={nome} className="text-muted-foreground">
-                        {qty}× {nome} — {s.duracao * qty} min · R$ {s.preco * qty}
-                      </p>
-                    );
-                  })}
-                </div>
-                <div className="flex items-center justify-between">
-                  <p className="text-foreground font-semibold">
-                    Total: {duracaoTotal} min · R$ {precoTotal}
-                  </p>
-                  <Button onClick={() => setStep(2)}>Continuar</Button>
-                </div>
+              <div className="mt-6 flex justify-end">
+                <Button onClick={() => setStep(2)}>
+                  Continuar ({servicosSelecionados.length} {servicosSelecionados.length === 1 ? "serviço" : "serviços"})
+                </Button>
               </div>
             )}
           </div>
@@ -328,7 +304,7 @@ const Agendar = () => {
               {format(data, "EEEE, dd 'de' MMMM", { locale: ptBR }).replace(/^./, (l) => l.toUpperCase())}
             </p>
             <p className="text-sm text-muted-foreground mb-6">
-              Duração total: {duracaoTotal} minutos
+              Duração estimada: {duracaoParaSlots} minutos
             </p>
             <div className="flex items-center gap-4 mb-6 text-sm">
               <div className="flex items-center gap-2">
@@ -346,32 +322,66 @@ const Agendar = () => {
               onSelect={(h) => { setHorario(h); setStep(4); }}
               loading={loadingSlots}
               dataSelecionada={data}
-              duracaoServico={duracaoTotal || 30}
+              duracaoServico={duracaoParaSlots || 30}
             />
             <Button variant="ghost" className="mt-4" onClick={() => setStep(2)}>← Voltar</Button>
           </div>
         )}
 
-        {/* Step 4: Contact info + summary + confirm */}
+        {/* Step 4: Quantities + Contact info + Confirm */}
         {step === 4 && data && horario && (
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-2">Confirme seu agendamento</h2>
 
-            {/* Summary */}
-            <div className="bg-secondary rounded-lg p-4 mb-6 text-sm space-y-2">
-              {Object.entries(quantidades).map(([nome, qty]) => {
+            {/* Quantity per service */}
+            <div className="bg-secondary rounded-lg p-4 mb-6 space-y-4">
+              <p className="text-sm font-medium text-foreground">Quantidade de pessoas por serviço:</p>
+              {servicosSelecionados.map((nome) => {
                 const s = SERVICOS.find((sv) => sv.nome === nome);
                 if (!s) return null;
+                const qty = quantidades[nome] || 1;
                 return (
-                  <p key={nome} className="text-muted-foreground">
-                    <span className="font-medium text-foreground">{qty}× {nome}</span> — {s.duracao * qty} min · R$ {s.preco * qty}
-                  </p>
+                  <div key={nome} className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-foreground text-sm">{nome}</p>
+                      <p className="text-xs text-muted-foreground">{s.duracao * qty} min · R$ {s.preco * qty}</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setQty(nome, -1)}
+                        disabled={qty <= 1}
+                        className={cn(
+                          "w-8 h-8 rounded-full flex items-center justify-center border transition-colors",
+                          qty <= 1
+                            ? "border-border text-muted-foreground opacity-40 cursor-not-allowed"
+                            : "border-primary text-primary hover:bg-primary/10"
+                        )}
+                      >
+                        <Minus className="h-4 w-4" />
+                      </button>
+                      <span className="w-6 text-center font-bold text-foreground text-lg">{qty}</span>
+                      <button
+                        type="button"
+                        onClick={() => setQty(nome, 1)}
+                        disabled={qty >= 4}
+                        className={cn(
+                          "w-8 h-8 rounded-full flex items-center justify-center border transition-colors",
+                          qty >= 4
+                            ? "border-border text-muted-foreground opacity-40 cursor-not-allowed"
+                            : "border-primary text-primary hover:bg-primary/10"
+                        )}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
                 );
               })}
-              <div className="pt-2 border-t border-border">
+              <div className="pt-3 border-t border-border text-sm">
                 <p><span className="text-muted-foreground mr-2">Total:</span><span className="font-bold text-foreground">{duracaoTotal} min · R$ {precoTotal}</span></p>
-                <p><span className="text-muted-foreground mr-2">Data:</span><span className="font-medium">{format(data, "dd/MM/yyyy")}</span></p>
-                <p><span className="text-muted-foreground mr-2">Horário:</span><span className="font-medium">{horario}</span></p>
+                <p><span className="text-muted-foreground mr-2">Data:</span><span className="font-medium text-foreground">{format(data, "dd/MM/yyyy")}</span></p>
+                <p><span className="text-muted-foreground mr-2">Horário:</span><span className="font-medium text-foreground">{horario}</span></p>
               </div>
             </div>
 
