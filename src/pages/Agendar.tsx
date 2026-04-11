@@ -225,7 +225,7 @@ const Agendar = () => {
             <h2 className="text-2xl font-bold text-foreground mb-2">Escolha os serviços</h2>
             <p className="text-muted-foreground mb-6">Toque nos serviços desejados para selecioná-los.</p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3">
               {SERVICOS.map((s) => {
                 const selected = servicosSelecionados.includes(s.nome);
                 const IconComponent = iconMap[s.icone];
@@ -238,16 +238,16 @@ const Agendar = () => {
                       selected ? "border-primary bg-primary/10" : "bg-card border-border hover:border-primary/30"
                     )}
                   >
-                    <CardContent className="p-5">
+                    <CardContent className="p-4">
                       <div className="flex items-center gap-4">
                         <div className="text-primary">
-                          {IconComponent ? <IconComponent size={28} /> : <span className="text-3xl">{s.icone}</span>}
+                          {IconComponent ? <IconComponent size={24} /> : <span className="text-2xl">{s.icone}</span>}
                         </div>
                         <div className="flex-1">
                           <h3 className="font-semibold text-foreground">{s.nome}</h3>
-                          <p className="text-xs text-muted-foreground">{s.descricao}</p>
-                          <p className="text-sm text-muted-foreground mt-1">{s.duracao} min · R$ {s.preco}</p>
+                          <p className="text-sm text-muted-foreground">{s.duracao} min</p>
                         </div>
+                        <span className="text-primary font-bold text-lg">R$ {s.preco}</span>
                         {selected && (
                           <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center">
                             <Check className="h-4 w-4 text-primary-foreground" />
