@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronRight, Minus, Plus, Loader2, Check } from "lucide-react";
+import { ChevronRight, Loader2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -135,13 +135,6 @@ const Agendar = () => {
     );
   };
 
-  const setQty = (nome: string, delta: number) => {
-    setQuantidades((prev) => {
-      const current = prev[nome] || 1;
-      const next = Math.max(1, Math.min(4, current + delta));
-      return { ...prev, [nome]: next };
-    });
-  };
 
   const formatTelefone = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 11);
