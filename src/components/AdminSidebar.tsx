@@ -1,4 +1,4 @@
-import { LayoutDashboard, CalendarDays, Users, DollarSign, Megaphone, LogOut, Gift, Camera } from "lucide-react";
+import { LayoutDashboard, CalendarDays, Users, DollarSign, Megaphone, LogOut, Gift, Camera, CalendarOff } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,6 +27,7 @@ const items = [
   { title: "Marketing", url: "/admin/marketing", icon: Megaphone },
   { title: "Fidelidade", url: "/admin/fidelidade", icon: Gift },
   { title: "Cortes Recentes", url: "/admin/cortes-recentes", icon: Camera },
+  { title: "Bloqueios", url: "/admin/bloqueios", icon: CalendarOff },
 ];
 
 export function AdminSidebar() {

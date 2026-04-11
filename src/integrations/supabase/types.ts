@@ -53,6 +53,33 @@ export type Database = {
         }
         Relationships: []
       }
+      bloqueios_agenda: {
+        Row: {
+          created_at: string
+          data: string
+          horario: string | null
+          id: string
+          motivo: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data: string
+          horario?: string | null
+          id?: string
+          motivo?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          horario?: string | null
+          id?: string
+          motivo?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       cortes_recentes: {
         Row: {
           created_at: string
