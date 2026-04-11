@@ -115,17 +115,36 @@ const Agendar = () => {
       }, 0)
     : duracaoTotal;
 
+  // Fetch bloqueios once
+  useEffect(() => {
+    const fetchBloqueios = async () => {
+      const { data: bloqs } = await supabase
+        .from("bloqueios_agenda")
+        .select("data, horario")
+        .gte("data", format(new Date(), "yyyy-MM-dd"));
+      if (bloqs) {
+        const dias = bloqs.filter((b: any) => !b.horario).map((b: any) => b.data);
+        setDiasBloqueados([...new Set(dias)]);
+      }
+    };
+    fetchBloqueios();
+  }, []);
+
+  // Fetch occupied + blocked slots for selected date
   useEffect(() => {
     if (!data) return;
     const fetchOcupados = async () => {
       setLoadingSlots(true);
       const dataStr = format(data, "yyyy-MM-dd");
-      const { data: agendamentos } = await supabase
-        .from("agendamentos")
-        .select("horario, servico")
-        .eq("data", dataStr)
-        .eq("status", "confirmado");
-      setHorariosOcupados(calcularSlotsOcupados(agendamentos || []));
+      
+      const [{ data: agendamentos }, { data: bloqs }] = await Promise.all([
+        supabase.from("agendamentos").select("horario, servico").eq("data", dataStr).eq("status", "confirmado"),
+        supabase.from("bloqueios_agenda").select("horario").eq("data", dataStr),
+      ]);
+      
+      const blockedSlots = (bloqs || []).filter((b: any) => b.horario).map((b: any) => b.horario);
+      setHorariosBloqueados(blockedSlots);
+      setHorariosOcupados([...calcularSlotsOcupados(agendamentos || []), ...blockedSlots]);
       setLoadingSlots(false);
     };
     fetchOcupados();
@@ -281,7 +300,10 @@ const Agendar = () => {
                 mode="single"
                 selected={data}
                 onSelect={(d) => { setData(d); if (d) { setHorario(null); setStep(3); } }}
-                disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                disabled={(date) => {
+                  if (date < new Date(new Date().setHours(0, 0, 0, 0))) return true;
+                  return diasBloqueados.includes(format(date, "yyyy-MM-dd"));
+                }}
                 locale={ptBR}
                 className="rounded-lg border border-border bg-card p-3 pointer-events-auto"
               />
