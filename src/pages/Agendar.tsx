@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChevronRight, Minus, Plus, Loader2, Check } from "lucide-react";
+import { ChevronRight, Loader2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -84,27 +84,26 @@ const Agendar = () => {
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
   const [estilo, setEstilo] = useState<string | null>(estiloFromUrl || null);
+  const [numeroPessoas, setNumeroPessoas] = useState<number | null>(null);
   const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [confirmacao, setConfirmacao] = useState<any>(null);
 
-  const duracaoTotal = calcDuracaoTotal(quantidades);
-  const precoTotal = calcPrecoTotal(quantidades);
+  const multiplicador = numeroPessoas || 1;
   const temServico = servicosSelecionados.length > 0;
 
-  // Initialize quantities when entering step 4
+  // Build quantidades based on selected services × numeroPessoas
   useEffect(() => {
-    if (step === 4) {
-      setQuantidades((prev) => {
-        const updated: ServicoQuantidades = {};
-        for (const nome of servicosSelecionados) {
-          updated[nome] = prev[nome] || 1;
-        }
-        return updated;
-      });
+    const updated: ServicoQuantidades = {};
+    for (const nome of servicosSelecionados) {
+      updated[nome] = multiplicador;
     }
-  }, [step, servicosSelecionados]);
+    setQuantidades(updated);
+  }, [servicosSelecionados, multiplicador]);
+
+  const duracaoTotal = calcDuracaoTotal(quantidades);
+  const precoTotal = calcPrecoTotal(quantidades);
 
   // For step 3: compute duration based on selected services (qty=1 each) for slot availability
   const duracaoParaSlots = step < 4
@@ -136,13 +135,6 @@ const Agendar = () => {
     );
   };
 
-  const setQty = (nome: string, delta: number) => {
-    setQuantidades((prev) => {
-      const current = prev[nome] || 1;
-      const next = Math.max(1, Math.min(4, current + delta));
-      return { ...prev, [nome]: next };
-    });
-  };
 
   const formatTelefone = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 11);
@@ -331,58 +323,18 @@ const Agendar = () => {
         {/* Step 4: Quantities + Contact info + Confirm */}
         {step === 4 && data && horario && (
           <div>
-            <h2 className="text-2xl font-bold text-foreground mb-2">Confirme seu agendamento</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-2">Seus dados</h2>
 
-            {/* Quantity per service */}
-            <div className="bg-secondary rounded-lg p-4 mb-6 space-y-4">
-              <p className="text-sm font-medium text-foreground">Quantidade de pessoas por serviço:</p>
-              {servicosSelecionados.map((nome) => {
-                const s = SERVICOS.find((sv) => sv.nome === nome);
-                if (!s) return null;
-                const qty = quantidades[nome] || 1;
-                return (
-                  <div key={nome} className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-foreground text-sm">{nome}</p>
-                      <p className="text-xs text-muted-foreground">{s.duracao * qty} min · R$ {s.preco * qty}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setQty(nome, -1)}
-                        disabled={qty <= 1}
-                        className={cn(
-                          "w-8 h-8 rounded-full flex items-center justify-center border transition-colors",
-                          qty <= 1
-                            ? "border-border text-muted-foreground opacity-40 cursor-not-allowed"
-                            : "border-primary text-primary hover:bg-primary/10"
-                        )}
-                      >
-                        <Minus className="h-4 w-4" />
-                      </button>
-                      <span className="w-6 text-center font-bold text-foreground text-lg">{qty}</span>
-                      <button
-                        type="button"
-                        onClick={() => setQty(nome, 1)}
-                        disabled={qty >= 4}
-                        className={cn(
-                          "w-8 h-8 rounded-full flex items-center justify-center border transition-colors",
-                          qty >= 4
-                            ? "border-border text-muted-foreground opacity-40 cursor-not-allowed"
-                            : "border-primary text-primary hover:bg-primary/10"
-                        )}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-              <div className="pt-3 border-t border-border text-sm">
-                <p><span className="text-muted-foreground mr-2">Total:</span><span className="font-bold text-foreground">{duracaoTotal} min · R$ {precoTotal}</span></p>
-                <p><span className="text-muted-foreground mr-2">Data:</span><span className="font-medium text-foreground">{format(data, "dd/MM/yyyy")}</span></p>
-                <p><span className="text-muted-foreground mr-2">Horário:</span><span className="font-medium text-foreground">{horario}</span></p>
-              </div>
+            {/* Summary */}
+            <div className="bg-secondary rounded-lg p-4 mb-6 text-sm space-y-1">
+              <p><span className="text-muted-foreground mr-2">Serviços:</span><span className="font-medium text-foreground">{servicosSelecionados.join(", ")}</span></p>
+              {numeroPessoas && (
+                <p><span className="text-muted-foreground mr-2">Número de pessoas:</span><span className="font-medium text-foreground">{numeroPessoas}</span></p>
+              )}
+              <p><span className="text-muted-foreground mr-2">Duração:</span><span className="font-medium text-foreground">{duracaoTotal} min</span></p>
+              <p><span className="text-muted-foreground mr-2">Valor:</span><span className="font-medium text-foreground">R$ {precoTotal}</span></p>
+              <p><span className="text-muted-foreground mr-2">Data:</span><span className="font-medium text-foreground">{format(data, "dd/MM/yyyy")}</span></p>
+              <p><span className="text-muted-foreground mr-2">Horário:</span><span className="font-medium text-foreground">{horario}</span></p>
             </div>
 
             {/* Contact form */}
@@ -430,6 +382,30 @@ const Agendar = () => {
                     )}
                   >
                     {e}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Quantidade de pessoas selector */}
+            <div className="mb-6 max-w-md">
+              <label className="text-sm font-medium text-foreground mb-2 block">
+                Quantidade de pessoas (opcional)
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {[2, 3, 4].map((n) => (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setNumeroPessoas(numeroPessoas === n ? null : n)}
+                    className={cn(
+                      "w-10 h-10 rounded-full text-sm font-medium border transition-colors",
+                      numeroPessoas === n
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-card text-muted-foreground border-border hover:border-primary/50"
+                    )}
+                  >
+                    {n}
                   </button>
                 ))}
               </div>
