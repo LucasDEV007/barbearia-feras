@@ -81,6 +81,8 @@ const Agendar = () => {
   const [quantidades, setQuantidades] = useState<ServicoQuantidades>({});
   const [data, setData] = useState<Date | undefined>();
   const [horario, setHorario] = useState<string | null>(null);
+  const [diasBloqueados, setDiasBloqueados] = useState<string[]>([]);
+  const [horariosBloqueados, setHorariosBloqueados] = useState<string[]>([]);
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
   const [estilo, setEstilo] = useState<string | null>(estiloFromUrl || null);
