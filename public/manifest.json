@@ -1,0 +1,21 @@
+{
+  "name": "Barbearia Feras",
+  "short_name": "Barbearia Feras",
+  "description": "Agendamento online da Barbearia Feras",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1d2e",
+  "theme_color": "#c9942a",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
