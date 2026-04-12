@@ -75,7 +75,7 @@ const Agendar = () => {
   const [step, setStep] = useState(1);
   // Step 1: just selected service names
   const [servicosSelecionados, setServicosSelecionados] = useState<string[]>(
-    servicoFromUrl ? [servicoFromUrl] : []
+    servicoFromUrl ? [servicoFromUrl] : estiloFromUrl ? ["Corte masculino"] : []
   );
   // Step 4: quantities per selected service (default 1)
   const [quantidades, setQuantidades] = useState<ServicoQuantidades>({});
@@ -352,6 +352,9 @@ const Agendar = () => {
             {/* Summary */}
             <div className="bg-secondary rounded-lg p-4 mb-6 text-sm space-y-1">
               <p><span className="text-muted-foreground mr-2">Serviços:</span><span className="font-medium text-foreground">{servicosSelecionados.join(", ")}</span></p>
+              {estilo && (
+                <p><span className="text-muted-foreground mr-2">Estilo de corte:</span><span className="font-medium text-foreground">{estilo}</span></p>
+              )}
               {numeroPessoas && (
                 <p><span className="text-muted-foreground mr-2">Número de pessoas:</span><span className="font-medium text-foreground">{numeroPessoas}</span></p>
               )}
