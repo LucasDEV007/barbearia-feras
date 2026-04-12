@@ -86,23 +86,24 @@ const Agendar = () => {
   const [nome, setNome] = useState("");
   const [telefone, setTelefone] = useState("");
   const [estilo, setEstilo] = useState<string | null>(estiloFromUrl || null);
-  const [numeroPessoas, setNumeroPessoas] = useState<number | null>(null);
+  // numeroPessoas removed — quantities are now per-service
   const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [confirmacao, setConfirmacao] = useState<any>(null);
 
-  const multiplicador = numeroPessoas || 1;
   const temServico = servicosSelecionados.length > 0;
 
-  // Build quantidades based on selected services × numeroPessoas
+  // Sync quantidades when services change (default qty 1 for new services)
   useEffect(() => {
-    const updated: ServicoQuantidades = {};
-    for (const nome of servicosSelecionados) {
-      updated[nome] = multiplicador;
-    }
-    setQuantidades(updated);
-  }, [servicosSelecionados, multiplicador]);
+    setQuantidades((prev) => {
+      const updated: ServicoQuantidades = {};
+      for (const nome of servicosSelecionados) {
+        updated[nome] = prev[nome] || 1;
+      }
+      return updated;
+    });
+  }, [servicosSelecionados]);
 
   const duracaoTotal = calcDuracaoTotal(quantidades);
   const precoTotal = calcPrecoTotal(quantidades);
@@ -349,17 +350,60 @@ const Agendar = () => {
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-2">Seus dados</h2>
 
+            {/* Per-service quantity selector (optional) */}
+            <div className="mb-6 max-w-md">
+              <label className="text-sm font-medium text-foreground mb-2 block">
+                Quantidade por serviço (opcional)
+              </label>
+              <div className="space-y-3">
+                {servicosSelecionados.map((nome) => {
+                  const s = SERVICOS.find((sv) => sv.nome === nome);
+                  const qty = quantidades[nome] || 1;
+                  return (
+                    <div key={nome} className="bg-secondary rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-medium text-foreground text-sm">{nome}</span>
+                        {servicosSelecionados.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => setServicosSelecionados((prev) => prev.filter((n) => n !== nome))}
+                            className="text-xs text-destructive hover:underline"
+                          >
+                            Remover
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        {[1, 2, 3, 4].map((n) => (
+                          <button
+                            key={n}
+                            type="button"
+                            onClick={() => setQuantidades((prev) => ({ ...prev, [nome]: n }))}
+                            className={cn(
+                              "w-9 h-9 rounded-full text-sm font-medium border transition-colors",
+                              qty === n
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "bg-card text-muted-foreground border-border hover:border-primary/50"
+                            )}
+                          >
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+                      {s && <p className="text-xs text-muted-foreground mt-1">{s.duracao * qty} min · R$ {s.preco * qty}</p>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Summary */}
             <div className="bg-secondary rounded-lg p-4 mb-6 text-sm space-y-1">
-              <p><span className="text-muted-foreground mr-2">Serviços:</span><span className="font-medium text-foreground">{servicosSelecionados.join(", ")}</span></p>
               {estilo && (
                 <p><span className="text-muted-foreground mr-2">Estilo de corte:</span><span className="font-medium text-foreground">{estilo}</span></p>
               )}
-              {numeroPessoas && (
-                <p><span className="text-muted-foreground mr-2">Número de pessoas:</span><span className="font-medium text-foreground">{numeroPessoas}</span></p>
-              )}
-              <p><span className="text-muted-foreground mr-2">Duração:</span><span className="font-medium text-foreground">{duracaoTotal} min</span></p>
-              <p><span className="text-muted-foreground mr-2">Valor:</span><span className="font-medium text-foreground">R$ {precoTotal}</span></p>
+              <p><span className="text-muted-foreground mr-2">Duração total:</span><span className="font-medium text-foreground">{duracaoTotal} min</span></p>
+              <p><span className="text-muted-foreground mr-2">Valor total:</span><span className="font-medium text-foreground">R$ {precoTotal}</span></p>
               <p><span className="text-muted-foreground mr-2">Data:</span><span className="font-medium text-foreground">{format(data, "dd/MM/yyyy")}</span></p>
               <p><span className="text-muted-foreground mr-2">Horário:</span><span className="font-medium text-foreground">{horario}</span></p>
             </div>
@@ -409,30 +453,6 @@ const Agendar = () => {
                     )}
                   >
                     {e}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Quantidade de pessoas selector */}
-            <div className="mb-6 max-w-md">
-              <label className="text-sm font-medium text-foreground mb-2 block">
-                Quantidade de pessoas (opcional)
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {[2, 3, 4].map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    onClick={() => setNumeroPessoas(numeroPessoas === n ? null : n)}
-                    className={cn(
-                      "w-10 h-10 rounded-full text-sm font-medium border transition-colors",
-                      numeroPessoas === n
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-card text-muted-foreground border-border hover:border-primary/50"
-                    )}
-                  >
-                    {n}
                   </button>
                 ))}
               </div>
