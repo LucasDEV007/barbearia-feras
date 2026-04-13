@@ -348,77 +348,20 @@ const Agendar = () => {
         {/* Step 4: Quantities + Contact info + Confirm */}
         {step === 4 && data && horario && (
           <div>
-            {/* Quantity section — separate from contact */}
-            <div className="mb-8 max-w-md">
-              <h2 className="text-2xl font-bold text-foreground mb-2">Quantidade por serviço</h2>
-              <p className="text-muted-foreground mb-4 text-sm">Opcional — ajuste se precisar de mais de 1 por serviço.</p>
-              <div className="space-y-4">
-                {servicosSelecionados.map((nome) => {
-                  const s = SERVICOS.find((sv) => sv.nome === nome);
-                  const qty = quantidades[nome] || 1;
-                  return (
-                    <div key={nome}>
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-foreground text-sm">{nome}</span>
-                        {servicosSelecionados.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => setServicosSelecionados((prev) => prev.filter((n) => n !== nome))}
-                            className="text-xs text-destructive hover:underline"
-                          >
-                            Remover
-                          </button>
-                        )}
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {[1, 2, 3, 4].map((n) => (
-                          <button
-                            key={n}
-                            type="button"
-                            onClick={() => setQuantidades((prev) => ({ ...prev, [nome]: n }))}
-                            className={cn(
-                              "px-3 py-1.5 rounded-full text-sm font-medium border transition-colors",
-                              qty === n
-                                ? "bg-primary text-primary-foreground border-primary"
-                                : "bg-card text-muted-foreground border-border hover:border-primary/50"
-                            )}
-                          >
-                            {n}
-                          </button>
-                        ))}
-                      </div>
-                      {s && <p className="text-xs text-muted-foreground mt-1">{s.duracao * qty} min · R$ {s.preco * qty}</p>}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Contact section */}
             <h2 className="text-2xl font-bold text-foreground mb-4">Seus dados</h2>
-            <div className="space-y-4 max-w-md mb-6">
-              <div className="space-y-2">
-                <Label htmlFor="nome">Nome completo</Label>
-                <Input
-                  id="nome"
-                  placeholder="Seu nome"
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
-                  required
-                  className="bg-secondary border-border"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="telefone">Telefone</Label>
-                <Input
-                  id="telefone"
-                  placeholder="(85) 99999-9999"
-                  value={telefone}
-                  onChange={(e) => setTelefone(formatTelefone(e.target.value))}
-                  required
-                  className="bg-secondary border-border"
-                />
-              </div>
+
+            {/* Summary box */}
+            <div className="bg-secondary rounded-lg p-4 mb-6 text-sm space-y-1 max-w-md">
+              <p>
+                <span className="text-muted-foreground mr-2">Serviços:</span>
+                <span className="font-medium text-foreground">
+                  {Object.entries(quantidades).map(([n, q]) => q > 1 ? `${q}× ${n}` : n).join(", ")}
+                </span>
+              </p>
+              <p><span className="text-muted-foreground mr-2">Duração:</span><span className="font-medium text-foreground">{duracaoTotal} min</span></p>
+              <p><span className="text-muted-foreground mr-2">Valor:</span><span className="font-medium text-foreground">R$ {precoTotal}</span></p>
+              <p><span className="text-muted-foreground mr-2">Data:</span><span className="font-medium text-foreground">{format(data, "dd/MM/yyyy")}</span></p>
+              <p><span className="text-muted-foreground mr-2">Horário:</span><span className="font-medium text-foreground">{horario}</span></p>
             </div>
 
             {/* Estilo selector */}
@@ -445,19 +388,30 @@ const Agendar = () => {
               </div>
             </div>
 
-            {/* Summary */}
-            <div className="bg-secondary rounded-lg p-4 mb-6 text-sm space-y-1 max-w-md">
-              <p className="font-semibold text-foreground mb-2">Resumo do agendamento</p>
-              {Object.entries(quantidades).map(([n, q]) => (
-                <p key={n}><span className="text-muted-foreground">{q}× {n}</span></p>
-              ))}
-              {estilo && (
-                <p><span className="text-muted-foreground mr-2">Estilo:</span><span className="font-medium text-foreground">{estilo}</span></p>
-              )}
-              <p><span className="text-muted-foreground mr-2">Duração total:</span><span className="font-medium text-foreground">{duracaoTotal} min</span></p>
-              <p><span className="text-muted-foreground mr-2">Valor total:</span><span className="font-medium text-foreground">R$ {precoTotal}</span></p>
-              <p><span className="text-muted-foreground mr-2">Data:</span><span className="font-medium text-foreground">{format(data, "dd/MM/yyyy")}</span></p>
-              <p><span className="text-muted-foreground mr-2">Horário:</span><span className="font-medium text-foreground">{horario}</span></p>
+            {/* Contact form */}
+            <div className="space-y-4 max-w-md mb-6">
+              <div className="space-y-2">
+                <Label htmlFor="nome">Nome completo</Label>
+                <Input
+                  id="nome"
+                  placeholder="Seu nome"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  required
+                  className="bg-secondary border-border"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="telefone">Telefone</Label>
+                <Input
+                  id="telefone"
+                  placeholder="(85) 99999-9999"
+                  value={telefone}
+                  onChange={(e) => setTelefone(formatTelefone(e.target.value))}
+                  required
+                  className="bg-secondary border-border"
+                />
+              </div>
             </div>
 
             <Button
