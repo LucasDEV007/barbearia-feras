@@ -348,6 +348,40 @@ const Agendar = () => {
         {/* Step 4: Quantities + Contact info + Confirm */}
         {step === 4 && data && horario && (
           <div>
+            {/* Quantity per service */}
+            <div className="mb-6 max-w-md">
+              <label className="text-sm font-medium text-foreground mb-2 block">
+                Quantidade por serviço (opcional)
+              </label>
+              {servicosSelecionados.map((nome) => {
+                const s = SERVICOS.find((sv) => sv.nome === nome);
+                const qty = quantidades[nome] || 1;
+                return (
+                  <div key={nome} className="mb-3">
+                    <span className="text-sm text-foreground font-medium block mb-1">{nome}</span>
+                    <div className="flex flex-wrap gap-2">
+                      {[1, 2, 3, 4].map((n) => (
+                        <button
+                          key={n}
+                          type="button"
+                          onClick={() => setQuantidades((prev) => ({ ...prev, [nome]: n }))}
+                          className={cn(
+                            "px-3 py-1.5 rounded-full text-sm font-medium border transition-colors",
+                            qty === n
+                              ? "bg-primary text-primary-foreground border-primary"
+                              : "bg-card text-muted-foreground border-border hover:border-primary/50"
+                          )}
+                        >
+                          {n}
+                        </button>
+                      ))}
+                    </div>
+                    {s && <p className="text-xs text-muted-foreground mt-1">{s.duracao * qty} min · R$ {s.preco * qty}</p>}
+                  </div>
+                );
+              })}
+            </div>
+
             <h2 className="text-2xl font-bold text-foreground mb-4">Seus dados</h2>
 
             {/* Summary box */}
