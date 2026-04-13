@@ -348,6 +348,22 @@ const Agendar = () => {
         {/* Step 4: Quantities + Contact info + Confirm */}
         {step === 4 && data && horario && (
           <div>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Seus dados</h2>
+
+            {/* Summary box */}
+            <div className="bg-secondary rounded-lg p-4 mb-6 text-sm space-y-1 max-w-md">
+              <p>
+                <span className="text-muted-foreground mr-2">Serviços:</span>
+                <span className="font-medium text-foreground">
+                  {Object.entries(quantidades).map(([n, q]) => q > 1 ? `${q}× ${n}` : n).join(", ")}
+                </span>
+              </p>
+              <p><span className="text-muted-foreground mr-2">Duração:</span><span className="font-medium text-foreground">{duracaoTotal} min</span></p>
+              <p><span className="text-muted-foreground mr-2">Valor:</span><span className="font-medium text-foreground">R$ {precoTotal}</span></p>
+              <p><span className="text-muted-foreground mr-2">Data:</span><span className="font-medium text-foreground">{format(data, "dd/MM/yyyy")}</span></p>
+              <p><span className="text-muted-foreground mr-2">Horário:</span><span className="font-medium text-foreground">{horario}</span></p>
+            </div>
+
             {/* Quantity per service */}
             <div className="mb-6 max-w-md">
               <label className="text-sm font-medium text-foreground mb-2 block">
@@ -380,22 +396,6 @@ const Agendar = () => {
                   </div>
                 );
               })}
-            </div>
-
-            <h2 className="text-2xl font-bold text-foreground mb-4">Seus dados</h2>
-
-            {/* Summary box */}
-            <div className="bg-secondary rounded-lg p-4 mb-6 text-sm space-y-1 max-w-md">
-              <p>
-                <span className="text-muted-foreground mr-2">Serviços:</span>
-                <span className="font-medium text-foreground">
-                  {Object.entries(quantidades).map(([n, q]) => q > 1 ? `${q}× ${n}` : n).join(", ")}
-                </span>
-              </p>
-              <p><span className="text-muted-foreground mr-2">Duração:</span><span className="font-medium text-foreground">{duracaoTotal} min</span></p>
-              <p><span className="text-muted-foreground mr-2">Valor:</span><span className="font-medium text-foreground">R$ {precoTotal}</span></p>
-              <p><span className="text-muted-foreground mr-2">Data:</span><span className="font-medium text-foreground">{format(data, "dd/MM/yyyy")}</span></p>
-              <p><span className="text-muted-foreground mr-2">Horário:</span><span className="font-medium text-foreground">{horario}</span></p>
             </div>
 
             {/* Estilo selector */}
