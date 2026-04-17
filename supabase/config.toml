@@ -1,1 +1,4 @@
 project_id = "ddjutyzxpbornqrllojz"
+
+[functions.setup-barbeiro]
+verify_jwt = false
