@@ -31,11 +31,18 @@ const HeroSection = () => {
           Agende seu horário online de forma rápida e prática.
         </p>
 
-        <Link to="/agendar">
-          <Button size="lg" className="text-lg px-10 py-6 font-semibold rounded-full shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all">
-            Agendar Horário
-          </Button>
-        </Link>
+        <div className="flex flex-col items-center gap-3 max-w-sm mx-auto">
+          <Link to="/agendar" className="w-full">
+            <Button size="lg" className="w-full text-lg px-10 py-6 font-semibold rounded-full shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all">
+              Agendar agora →
+            </Button>
+          </Link>
+          <Link to="/meus-agendamentos" className="w-full">
+            <Button variant="outline" size="lg" className="w-full text-base px-10 py-6 font-semibold rounded-full bg-background/40 backdrop-blur border-border hover:bg-accent transition-all">
+              Meus agendamentos
+            </Button>
+          </Link>
+        </div>
       </div>
     </section>
   );
