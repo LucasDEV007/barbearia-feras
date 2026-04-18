@@ -97,7 +97,7 @@ const AdminCortesRecentes = () => {
     if (!user) return;
 
     const ext = file.name.split(".").pop();
-    const fileName = `${Date.now()}.${ext}`;
+    const fileName = `${user.id}/${Date.now()}.${ext}`;
 
     const { error: uploadErr } = await supabase.storage.from("cortes-fotos").upload(fileName, file);
     if (uploadErr) {
