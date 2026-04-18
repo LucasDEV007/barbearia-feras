@@ -288,7 +288,53 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_agendamentos_by_telefone: {
+        Args: { p_telefone: string }
+        Returns: {
+          beneficio_aplicado: boolean
+          created_at: string | null
+          data: string
+          estilo: string | null
+          horario: string
+          id: string
+          nome_cliente: string
+          servico: string
+          status: string
+          telefone: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "agendamentos"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      get_horarios_ocupados: {
+        Args: { p_data: string }
+        Returns: {
+          horario: string
+          servico: string
+        }[]
+      }
+      get_pontos_by_telefone: {
+        Args: { p_telefone: string }
+        Returns: {
+          created_at: string | null
+          id: string
+          nome_cliente: string
+          pontos: number
+          recompensa_disponivel: boolean
+          recompensas_utilizadas: number
+          telefone: string
+          updated_at: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "fidelidade_pontos"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
     }
     Enums: {
       [_ in never]: never
