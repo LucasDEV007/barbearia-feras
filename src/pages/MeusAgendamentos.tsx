@@ -85,7 +85,7 @@ const MeusAgendamentos = () => {
     setBuscou(false);
     const telefoneFormatado = formatTelefone(telefone);
 
-    const { data, error } = await supabase.rpc("get_agendamentos_by_telefone" as any, {
+    const { data, error } = await (supabase as any).rpc("get_agendamentos_by_telefone", {
       p_telefone: telefoneFormatado,
     });
 

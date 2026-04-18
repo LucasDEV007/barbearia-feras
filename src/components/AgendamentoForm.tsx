@@ -56,7 +56,7 @@ const AgendamentoForm = ({ onSubmit, loading }: AgendamentoFormProps) => {
         }
 
         // Check if client has reward available — search with formatted phone via secure RPC
-        const { data: pontos } = await supabase.rpc("get_pontos_by_telefone" as any, {
+        const { data: pontos } = await (supabase as any).rpc("get_pontos_by_telefone", {
           p_telefone: telefone,
         });
         const ponto = (pontos as any[] | null)?.find((p) => p.recompensa_disponivel) ?? null;
