@@ -316,10 +316,8 @@ export type Database = {
           estilo: string
           horario: string
           id: string
-          nome_cliente: string
           servico: string
           status: string
-          telefone: string
         }[]
       }
       get_fidelidade_config_publica: {
