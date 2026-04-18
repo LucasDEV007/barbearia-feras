@@ -51,12 +51,13 @@ const Login = () => {
     setLoading(true);
     const { data, error } = await supabase.functions.invoke("setup-barbeiro", {
       body: { nome, email, password },
+      headers: { "x-setup-secret": setupSecret },
     });
     if (error || (data && data.error)) {
       setLoading(false);
       toast({
         title: "Erro ao cadastrar",
-        description: (data && data.error) || "Não foi possível criar a conta.",
+        description: (data && data.error) || "Não foi possível criar a conta. Verifique o segredo de configuração.",
         variant: "destructive",
       });
       return;
