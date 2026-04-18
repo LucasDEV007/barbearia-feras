@@ -14,6 +14,7 @@ const Login = () => {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [setupSecret, setSetupSecret] = useState("");
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
   const [needsSetup, setNeedsSetup] = useState(false);
@@ -27,12 +28,10 @@ const Login = () => {
       if (session) navigate("/admin", { replace: true });
     });
 
-    // Verifica se já existe barbeiro cadastrado
-    supabase.functions.invoke("setup-barbeiro", { method: "GET" })
-      .then(({ data, error }) => {
-        if (!error && data && data.exists === false) setNeedsSetup(true);
-      })
-      .finally(() => setChecking(false));
+    // We can no longer probe whether a barbeiro account exists without the
+    // setup secret. Default to login form; users who need to perform the
+    // initial setup can toggle the form manually.
+    setChecking(false);
 
     return () => subscription.unsubscribe();
   }, [navigate]);
@@ -52,12 +51,13 @@ const Login = () => {
     setLoading(true);
     const { data, error } = await supabase.functions.invoke("setup-barbeiro", {
       body: { nome, email, password },
+      headers: { "x-setup-secret": setupSecret },
     });
     if (error || (data && data.error)) {
       setLoading(false);
       toast({
         title: "Erro ao cadastrar",
-        description: (data && data.error) || "Não foi possível criar a conta.",
+        description: (data && data.error) || "Não foi possível criar a conta. Verifique o segredo de configuração.",
         variant: "destructive",
       });
       return;
@@ -103,9 +103,23 @@ const Login = () => {
                   <Label htmlFor="password">Senha</Label>
                   <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} className="bg-secondary border-border" />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="setupSecret">Segredo de configuração</Label>
+                  <Input id="setupSecret" type="password" value={setupSecret} onChange={(e) => setSetupSecret(e.target.value)} required className="bg-secondary border-border" />
+                  <p className="text-xs text-muted-foreground">
+                    Definido no servidor (SETUP_SECRET). Necessário apenas no primeiro cadastro.
+                  </p>
+                </div>
                 <Button type="submit" disabled={loading} className="w-full font-semibold">
                   {loading ? <><Loader2 className="animate-spin mr-2 h-4 w-4" /> Criando...</> : "Criar conta"}
                 </Button>
+                <button
+                  type="button"
+                  onClick={() => setNeedsSetup(false)}
+                  className="text-xs text-muted-foreground hover:text-foreground underline w-full text-center"
+                >
+                  Já tenho conta — voltar ao login
+                </button>
                 <p className="text-xs text-muted-foreground text-center">
                   Esta será a única conta de barbeiro do sistema.
                 </p>
@@ -123,6 +137,13 @@ const Login = () => {
                 <Button type="submit" disabled={loading} className="w-full font-semibold">
                   {loading ? <><Loader2 className="animate-spin mr-2 h-4 w-4" /> Entrando...</> : "Entrar"}
                 </Button>
+                <button
+                  type="button"
+                  onClick={() => setNeedsSetup(true)}
+                  className="text-xs text-muted-foreground hover:text-foreground underline w-full text-center"
+                >
+                  Configuração inicial do barbeiro
+                </button>
               </form>
             )}
           </CardContent>
