@@ -14,8 +14,6 @@ import { toast } from "sonner";
 
 interface Agendamento {
   id: string;
-  nome_cliente: string;
-  telefone: string;
   servico: string;
   data: string;
   horario: string;
