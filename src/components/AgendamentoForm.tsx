@@ -41,13 +41,9 @@ const AgendamentoForm = ({ onSubmit, loading }: AgendamentoFormProps) => {
     const checkReward = async () => {
       setCheckingReward(true);
       try {
-        // Check if program is active
-        const { data: config } = await supabase
-          .from("fidelidade_config")
-          .select("*")
-          .eq("ativo", true)
-          .limit(1)
-          .maybeSingle();
+        // Check if program is active via secure RPC (no owner data exposed)
+        const { data: configData } = await (supabase as any).rpc("get_fidelidade_config_publica");
+        const config = Array.isArray(configData) && configData.length > 0 ? configData[0] : null;
 
         if (!config) {
           setRecompensa(null);
