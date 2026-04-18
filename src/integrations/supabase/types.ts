@@ -291,10 +291,8 @@ export type Database = {
       get_agendamentos_by_telefone: {
         Args: { p_telefone: string }
         Returns: {
-          beneficio_aplicado: boolean
-          created_at: string | null
           data: string
-          estilo: string | null
+          estilo: string
           horario: string
           id: string
           nome_cliente: string
@@ -302,12 +300,6 @@ export type Database = {
           status: string
           telefone: string
         }[]
-        SetofOptions: {
-          from: "*"
-          to: "agendamentos"
-          isOneToOne: false
-          isSetofReturn: true
-        }
       }
       get_fidelidade_config_publica: {
         Args: never
@@ -327,21 +319,11 @@ export type Database = {
       get_pontos_by_telefone: {
         Args: { p_telefone: string }
         Returns: {
-          created_at: string | null
           id: string
-          nome_cliente: string
           pontos: number
           recompensa_disponivel: boolean
           recompensas_utilizadas: number
-          telefone: string
-          updated_at: string | null
         }[]
-        SetofOptions: {
-          from: "*"
-          to: "fidelidade_pontos"
-          isOneToOne: false
-          isSetofReturn: true
-        }
       }
       is_barbershop_owner: { Args: { _user_id: string }; Returns: boolean }
     }
