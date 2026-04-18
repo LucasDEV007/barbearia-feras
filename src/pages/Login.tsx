@@ -14,6 +14,7 @@ const Login = () => {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [setupSecret, setSetupSecret] = useState("");
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(true);
   const [needsSetup, setNeedsSetup] = useState(false);
@@ -27,12 +28,10 @@ const Login = () => {
       if (session) navigate("/admin", { replace: true });
     });
 
-    // Verifica se já existe barbeiro cadastrado
-    supabase.functions.invoke("setup-barbeiro", { method: "GET" })
-      .then(({ data, error }) => {
-        if (!error && data && data.exists === false) setNeedsSetup(true);
-      })
-      .finally(() => setChecking(false));
+    // We can no longer probe whether a barbeiro account exists without the
+    // setup secret. Default to login form; users who need to perform the
+    // initial setup can toggle the form manually.
+    setChecking(false);
 
     return () => subscription.unsubscribe();
   }, [navigate]);
