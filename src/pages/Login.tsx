@@ -103,9 +103,23 @@ const Login = () => {
                   <Label htmlFor="password">Senha</Label>
                   <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} className="bg-secondary border-border" />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="setupSecret">Segredo de configuração</Label>
+                  <Input id="setupSecret" type="password" value={setupSecret} onChange={(e) => setSetupSecret(e.target.value)} required className="bg-secondary border-border" />
+                  <p className="text-xs text-muted-foreground">
+                    Definido no servidor (SETUP_SECRET). Necessário apenas no primeiro cadastro.
+                  </p>
+                </div>
                 <Button type="submit" disabled={loading} className="w-full font-semibold">
                   {loading ? <><Loader2 className="animate-spin mr-2 h-4 w-4" /> Criando...</> : "Criar conta"}
                 </Button>
+                <button
+                  type="button"
+                  onClick={() => setNeedsSetup(false)}
+                  className="text-xs text-muted-foreground hover:text-foreground underline w-full text-center"
+                >
+                  Já tenho conta — voltar ao login
+                </button>
                 <p className="text-xs text-muted-foreground text-center">
                   Esta será a única conta de barbeiro do sistema.
                 </p>
@@ -123,6 +137,13 @@ const Login = () => {
                 <Button type="submit" disabled={loading} className="w-full font-semibold">
                   {loading ? <><Loader2 className="animate-spin mr-2 h-4 w-4" /> Entrando...</> : "Entrar"}
                 </Button>
+                <button
+                  type="button"
+                  onClick={() => setNeedsSetup(true)}
+                  className="text-xs text-muted-foreground hover:text-foreground underline w-full text-center"
+                >
+                  Configuração inicial do barbeiro
+                </button>
               </form>
             )}
           </CardContent>
