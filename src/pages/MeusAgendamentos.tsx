@@ -85,12 +85,14 @@ const MeusAgendamentos = () => {
     setBuscou(false);
     const telefoneFormatado = formatTelefone(telefone);
 
-    const { data, error } = await supabase
-      .from("agendamentos")
-      .select("*")
-      .eq("telefone", telefoneFormatado)
-      .order("data", { ascending: false })
-      .order("horario", { ascending: true });
+    const { data, error } = await (supabase as any).rpc("get_agendamentos_by_telefone", {
+      p_telefone: telefoneFormatado,
+    });
+
+    const sorted = (data || []).slice().sort((a: any, b: any) => {
+      if (a.data !== b.data) return a.data < b.data ? 1 : -1;
+      return a.horario < b.horario ? -1 : 1;
+    });
 
     setLoading(false);
     setBuscou(true);
@@ -99,7 +101,7 @@ const MeusAgendamentos = () => {
       toast.error("Erro ao buscar agendamentos");
       return;
     }
-    setAgendamentos(data || []);
+    setAgendamentos(sorted as any);
   };
 
   const hojeStr = new Date().toISOString().split("T")[0];

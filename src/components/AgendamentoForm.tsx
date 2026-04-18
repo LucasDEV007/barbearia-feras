@@ -55,13 +55,11 @@ const AgendamentoForm = ({ onSubmit, loading }: AgendamentoFormProps) => {
           return;
         }
 
-        // Check if client has reward available — search with formatted phone
-        const { data: ponto } = await supabase
-          .from("fidelidade_pontos")
-          .select("*")
-          .eq("telefone", telefone)
-          .eq("recompensa_disponivel", true)
-          .maybeSingle();
+        // Check if client has reward available — search with formatted phone via secure RPC
+        const { data: pontos } = await (supabase as any).rpc("get_pontos_by_telefone", {
+          p_telefone: telefone,
+        });
+        const ponto = (pontos as any[] | null)?.find((p) => p.recompensa_disponivel) ?? null;
 
         if (ponto) {
           const pontoTyped = ponto as unknown as { id: string; recompensas_utilizadas: number };
