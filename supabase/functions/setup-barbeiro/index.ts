@@ -42,13 +42,21 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { error: createErr } = await admin.auth.admin.createUser({
+    const { data: created, error: createErr } = await admin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
       user_metadata: { nome },
     });
     if (createErr) throw createErr;
+
+    // Assign barbeiro role
+    if (created?.user?.id) {
+      const { error: roleErr } = await admin
+        .from("user_roles")
+        .insert({ user_id: created.user.id, role: "barbeiro" });
+      if (roleErr) throw roleErr;
+    }
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
