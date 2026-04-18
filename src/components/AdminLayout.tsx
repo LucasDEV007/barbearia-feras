@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -6,16 +6,35 @@ import { AdminSidebar } from "@/components/AdminSidebar";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
+  const [authState, setAuthState] = useState<"loading" | "authed" | "unauthed">("loading");
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session) navigate("/login", { replace: true });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        setAuthState("unauthed");
+        navigate("/login", { replace: true });
+      } else {
+        setAuthState("authed");
+      }
     });
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate("/login", { replace: true });
+      if (!session) {
+        setAuthState("unauthed");
+        navigate("/login", { replace: true });
+      } else {
+        setAuthState("authed");
+      }
     });
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  if (authState !== "authed") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-muted-foreground text-sm">Carregando...</div>
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>
