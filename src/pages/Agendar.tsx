@@ -139,7 +139,7 @@ const Agendar = () => {
       const dataStr = format(data, "yyyy-MM-dd");
       
       const [{ data: agendamentos }, { data: bloqs }] = await Promise.all([
-        supabase.from("agendamentos").select("horario, servico").eq("data", dataStr).eq("status", "confirmado"),
+        supabase.rpc("get_horarios_ocupados" as any, { p_data: dataStr }),
         supabase.from("bloqueios_agenda").select("horario").eq("data", dataStr),
       ]);
       
