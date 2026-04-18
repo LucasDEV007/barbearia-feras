@@ -309,6 +309,14 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      get_fidelidade_config_publica: {
+        Args: never
+        Returns: {
+          ativo: boolean
+          beneficio: string
+          cortes_necessarios: number
+        }[]
+      }
       get_horarios_ocupados: {
         Args: { p_data: string }
         Returns: {
@@ -335,6 +343,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      is_barbershop_owner: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
