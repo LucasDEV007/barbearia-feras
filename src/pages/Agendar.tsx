@@ -362,6 +362,9 @@ const Agendar = () => {
               <p><span className="text-muted-foreground mr-2">Valor:</span><span className="font-medium text-foreground">R$ {precoTotal}</span></p>
               <p><span className="text-muted-foreground mr-2">Data:</span><span className="font-medium text-foreground">{format(data, "dd/MM/yyyy")}</span></p>
               <p><span className="text-muted-foreground mr-2">Horário:</span><span className="font-medium text-foreground">{horario}</span></p>
+              {estilo && (
+                <p><span className="text-muted-foreground mr-2">Estilo:</span><span className="font-medium text-foreground">{estilo}</span></p>
+              )}
             </div>
 
             {/* Quantity per service */}
