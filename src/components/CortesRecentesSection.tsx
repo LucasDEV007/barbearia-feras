@@ -7,22 +7,16 @@ const CortesRecentesSection = () => {
 
   useEffect(() => {
     const fetch = async () => {
-      const { data: config } = await supabase
-        .from("cortes_recentes_config")
-        .select("*")
-        .eq("ativo", true)
-        .maybeSingle();
+      const { data: configData } = await (supabase as any).rpc("get_cortes_recentes_config_publica");
+      const config = Array.isArray(configData) ? configData[0] : null;
+      if (!config?.ativo) return;
 
-      if (!config) return;
+      const { data } = await (supabase as any).rpc("get_cortes_recentes_publicos");
+      const limite = config.limite || 6;
+      const lista = (data || []).slice(0, limite);
 
-      const { data } = await supabase
-        .from("cortes_recentes")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(config.limite || 6);
-
-      if (data && data.length > 0) {
-        setCortes(data);
+      if (lista.length > 0) {
+        setCortes(lista);
         setVisible(true);
       }
     };
