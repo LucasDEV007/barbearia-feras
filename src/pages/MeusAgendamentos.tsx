@@ -8,12 +8,24 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Phone, Search, Scissors, Calendar as CalendarIcon, Clock, Timer, DollarSign, ArrowLeft, CalendarX } from "lucide-react";
-import { SERVICOS } from "@/lib/constants";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Phone, Search, Scissors, Calendar as CalendarIcon, Clock, Timer, DollarSign, ArrowLeft, CalendarX, X } from "lucide-react";
+import { SERVICOS, BARBEARIA_WHATSAPP } from "@/lib/constants";
 import { toast } from "sonner";
 
 interface Agendamento {
   id: string;
+  nome_cliente: string;
+  telefone: string;
   servico: string;
   data: string;
   horario: string;
@@ -65,11 +77,25 @@ const statusVariant = (status: string): "default" | "secondary" | "destructive" 
 
 const shortId = (id: string) => `#${id.slice(0, 8).toUpperCase()}`;
 
+const buildCancelWhatsAppUrl = (ag: Agendamento) => {
+  const mensagem =
+    `❌ Cancelamento de agendamento\n\n` +
+    `Cliente: ${ag.nome_cliente}\n` +
+    `Serviços: ${ag.servico}\n` +
+    `Data: ${formatData(ag.data)}\n` +
+    `Horário: ${ag.horario}`;
+  const numero = onlyDigits(BARBEARIA_WHATSAPP);
+  const numeroFinal = numero.startsWith("55") ? numero : `55${numero}`;
+  return `https://wa.me/${numeroFinal}?text=${encodeURIComponent(mensagem)}`;
+};
+
 const MeusAgendamentos = () => {
   const [telefone, setTelefone] = useState("");
   const [loading, setLoading] = useState(false);
   const [buscou, setBuscou] = useState(false);
   const [agendamentos, setAgendamentos] = useState<Agendamento[]>([]);
+  const [cancelandoId, setCancelandoId] = useState<string | null>(null);
+  const [confirmCancel, setConfirmCancel] = useState<Agendamento | null>(null);
 
   const buscar = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -100,6 +126,35 @@ const MeusAgendamentos = () => {
       return;
     }
     setAgendamentos(sorted as any);
+  };
+
+  const handleConfirmCancel = async () => {
+    const ag = confirmCancel;
+    if (!ag) return;
+    setCancelandoId(ag.id);
+
+    const { data, error } = await (supabase as any).rpc("cancelar_agendamento_by_telefone", {
+      p_id: ag.id,
+      p_telefone: ag.telefone,
+    });
+
+    setCancelandoId(null);
+    setConfirmCancel(null);
+
+    if (error || !data) {
+      toast.error("Não foi possível cancelar o agendamento");
+      return;
+    }
+
+    // Update local state
+    setAgendamentos((prev) =>
+      prev.map((a) => (a.id === ag.id ? { ...a, status: "cancelado" } : a))
+    );
+
+    toast.success("Agendamento cancelado");
+
+    // Open WhatsApp with pre-filled message
+    window.open(buildCancelWhatsAppUrl(ag), "_blank", "noopener,noreferrer");
   };
 
   const hojeStr = new Date().toISOString().split("T")[0];
@@ -168,7 +223,13 @@ const MeusAgendamentos = () => {
             <h2 className="text-lg font-semibold mb-3 text-foreground">Próximos agendamentos</h2>
             <div className="space-y-3">
               {proximos.map((ag) => (
-                <AgendamentoCard key={ag.id} ag={ag} />
+                <AgendamentoCard
+                  key={ag.id}
+                  ag={ag}
+                  hojeStr={hojeStr}
+                  cancelando={cancelandoId === ag.id}
+                  onCancelar={() => setConfirmCancel(ag)}
+                />
               ))}
             </div>
           </section>
@@ -179,25 +240,69 @@ const MeusAgendamentos = () => {
             <h2 className="text-lg font-semibold mb-3 text-muted-foreground">Histórico</h2>
             <div className="space-y-3">
               {passados.map((ag) => (
-                <AgendamentoCard key={ag.id} ag={ag} muted />
+                <AgendamentoCard key={ag.id} ag={ag} hojeStr={hojeStr} muted />
               ))}
             </div>
           </section>
         )}
       </main>
 
+      <AlertDialog open={!!confirmCancel} onOpenChange={(open) => !open && setConfirmCancel(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancelar agendamento?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmCancel && (
+                <>
+                  Tem certeza que deseja cancelar o agendamento de{" "}
+                  <strong>{confirmCancel.servico}</strong> em{" "}
+                  <strong>{formatData(confirmCancel.data)}</strong> às{" "}
+                  <strong>{confirmCancel.horario}</strong>?
+                  <br />
+                  <br />
+                  O barbeiro será notificado via WhatsApp.
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Voltar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmCancel}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sim, cancelar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <WhatsAppButton />
     </div>
   );
 };
 
-const AgendamentoCard = ({ ag, muted }: { ag: Agendamento; muted?: boolean }) => {
+const AgendamentoCard = ({
+  ag,
+  hojeStr,
+  muted,
+  cancelando,
+  onCancelar,
+}: {
+  ag: Agendamento;
+  hojeStr: string;
+  muted?: boolean;
+  cancelando?: boolean;
+  onCancelar?: () => void;
+}) => {
   const { duracao, preco } = calcDuracaoEPreco(ag.servico);
   const statusLabel =
     ag.status === "confirmado" ? "Confirmado" :
     ag.status === "concluido" ? "Concluído" :
     ag.status === "cancelado" ? "Cancelado" :
     "Pendente";
+
+  const podeCancelar = !muted && ag.status === "confirmado" && ag.data >= hojeStr && !!onCancelar;
 
   return (
     <Card className={`p-4 md:p-5 ${muted ? "opacity-70" : ""}`}>
@@ -238,6 +343,21 @@ const AgendamentoCard = ({ ag, muted }: { ag: Agendamento; muted?: boolean }) =>
           </div>
         )}
       </div>
+
+      {podeCancelar && (
+        <div className="mt-4 pt-4 border-t border-border/60">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onCancelar}
+            disabled={cancelando}
+            className="w-full text-destructive border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
+          >
+            <X className="h-4 w-4 mr-1.5" />
+            {cancelando ? "Cancelando..." : "Cancelar agendamento"}
+          </Button>
+        </div>
+      )}
     </Card>
   );
 };
