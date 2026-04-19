@@ -326,6 +326,13 @@ export type Database = {
           telefone: string
         }[]
       }
+      get_cortes_recentes_config_publica: {
+        Args: never
+        Returns: {
+          ativo: boolean
+          limite: number
+        }[]
+      }
       get_cortes_recentes_publicos: {
         Args: never
         Returns: {
