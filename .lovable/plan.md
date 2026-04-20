@@ -1,49 +1,74 @@
 
+## Diagnóstico de renderização inicial (mobile)
 
-## Diagnóstico de performance no mobile
+Lighthouse mobile aponta **FCP 3.5s** e **LCP 3.6s** com **3.98s de "Element render delay"** no `<h1>` do hero. Análise dos dados + código:
 
-### Causa principal (confirmada)
+### O que está bloqueando o render do hero
 
-**1. Imagem `corte-degrade.jpg` com 1.5 MB** (`src/assets/`)
-- Tamanhos atuais: degrade **1.5MB**, americano **613KB**, social 117KB, moicano 57KB.
-- Mesmo com `loading="lazy"` na `GaleriaCortes`, em mobile a galeria está bem perto da dobra (logo abaixo do hero) e o navegador frequentemente decide pré-baixar. Em conexão 4G a degrade sozinha custa ~3–5 segundos e disputa banda com JS/CSS críticos, atrasando FCP/LCP.
-- Total da pasta: ~2.3 MB de JPG para 4 thumbnails de 512×682 — desproporcional.
+| # | Recurso | Problema | Impacto medido |
+|---|---------|----------|----------------|
+| 1 | `index-DMiVg3Ar.css` (12KB) | Bloqueia render | 153ms |
+| 2 | Google Fonts CSS (`fonts.googleapis.com/css2?...`) | Bloqueia render — só descoberto **após** parsear o CSS principal | **780ms** |
+| 3 | `Inter.woff2` + `PlayfairDisplay.woff2` | LCP é o `<h1>` em Playfair → texto fica invisível até a fonte chegar | ~3.6s na cadeia |
+| 4 | `index-DY7oC8YO.js` (163KB) | JS do app — sem ele o React não monta o `<h1>` | bloqueia LCP |
+| 5 | Imagens da galeria (corte-degrade 1.5MB, americano 627KB) | Disputam banda mesmo com `loading="lazy"` (estão a ~2.8k px da dobra mas o navegador faz lookahead) | rouba banda do hero |
 
-**2. Google Fonts via `@import` em `src/index.css`**
-- `@import` dentro de CSS é **render-blocking serializado**: o navegador só descobre a URL do Google Fonts depois de baixar e parsear o CSS principal, criando uma "cadeia em série" CSS → fonts.googleapis.com → fonts.gstatic.com.
-- Baixa 5 pesos de Inter (300/400/500/600/700) + 4 de Playfair (400/600/700/800), sendo que o site usa basicamente 400/600/700.
-- O LCP do hero é o `<h1>` em Playfair — a fonte chega tarde no mobile, segurando o LCP.
+### Causa raiz do "Element render delay" de 3.98s
 
-**3. Ícone PWA de 285 KB** (`public/icon-512.png`)
-- Não bloqueia FCP, mas é referenciado pelo manifest e baixado cedo em alguns navegadores mobile. Está super-dimensionado para um PNG (deveria ter ~30–60 KB).
+O LCP (texto `Barbearia Feras`) só pinta quando **três coisas convergem**: JS baixado+parseado, CSS principal pronto, e fonte Playfair carregada. A cadeia atual é serial:
 
-### Causas secundárias
+```text
+HTML → CSS principal (12KB) → Google Fonts CSS (1.7KB) → Playfair.woff2 (39KB)
+                            ↘ JS (163KB) → React monta <h1>
+```
 
-- Ausência de `preconnect` para `fonts.googleapis.com` e `fonts.gstatic.com`.
-- Imagens da galeria sem `decoding="async"` e sem `fetchpriority="low"` explícito.
-- Sem dimensões otimizadas: imagens são 512×682 mas os arquivos originais estão muito acima do necessário para essa caixa.
+A fonte Playfair é descoberta **tarde** (só após o CSS principal baixar) e o navegador tem que esperar para pintar o texto. Enquanto isso a galeria de imagens grandes consome banda em paralelo.
 
-### Recomendações priorizadas (todas seguras, sem mudar layout)
+### Recomendações priorizadas (todas seguras, sem mexer em rotas/lazy/estrutura)
 
-| # | Ação | Ganho esperado | Risco |
-|---|------|----------------|-------|
-| 1 | **Recomprimir as 4 imagens da galeria** para JPG ~80% qualidade na resolução real exibida (≤512×682). Meta: cada uma <80 KB. Especialmente `corte-degrade.jpg` (1.5MB → ~60KB) | LCP mobile: **−1.5 a −3s** | Nenhum (mesmo arquivo, mesmo path, mesma aparência) |
-| 2 | **Mover Google Fonts do `@import` no CSS para `<link>` no `index.html`** com `<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>` antes. Reduzir pesos para 400/600/700 de cada família | FCP/LCP: **−200 a −500 ms** | Nenhum (mesmas famílias, mesmos pesos visíveis) |
-| 3 | **Adicionar `decoding="async"` e `fetchpriority="low"`** nas imagens da `GaleriaCortes` para que não disputem banda com recursos críticos | LCP mobile: **−100 a −300 ms** | Nenhum |
-| 4 | **Recomprimir `icon-512.png`** (285KB → ~50KB) com pngquant/oxipng | TBT mobile: leve melhora | Nenhum (mesma imagem) |
+#### Prioridade 1 — Preload da fonte Playfair (impacto: −500 a −1500ms no LCP)
+A fonte do LCP é descoberta tarde. Adicionar `<link rel="preload" as="font">` no `index.html` faz o navegador iniciar o download em paralelo com o CSS, eliminando 1 nível da cadeia crítica.
 
-### Por que NÃO recomendamos agora
+```html
+<link rel="preload" href="https://fonts.gstatic.com/s/playfairdisplay/v40/nuFiD-vYSZviVYUb_rj3ij__anPXDTzYgEM86xQ.woff2" as="font" type="font/woff2" crossorigin>
+```
 
-- **Converter para WebP/AVIF**: traria mais ganho, mas exige mudar imports e fallbacks — fora do escopo "sem mudanças estruturais".
-- **Service Worker / cache PWA**: ajuda 2ª visita, não a primeira (foco do problema).
-- **Mudar lazy loading de rotas**: já implementado e correto.
+#### Prioridade 2 — `font-display: swap` garantido + fallback metric-compatible (impacto: FCP imediato)
+O Google Fonts já entrega `&display=swap`, mas confirmar e adicionar `size-adjust` no `@font-face` fallback para reduzir CLS quando a fonte trocar. Pequeno ajuste no CSS.
 
-### Prioridade de execução sugerida
+#### Prioridade 3 — `media="print"` trick para Google Fonts CSS (impacto: −780ms render-blocking)
+Carregar o CSS de fontes de forma não-bloqueante, aplicando após download:
 
-1. **Etapa 2A** — recomprimir as 4 imagens da galeria (impacto máximo, esforço mínimo).
-2. **Etapa 2B** — migrar Google Fonts para `<link>` + preconnect + reduzir pesos.
-3. **Etapa 2C** — atributos `decoding`/`fetchpriority` nas imgs da galeria.
-4. **Etapa 2D** — recomprimir `icon-512.png`.
+```html
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?..." media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?..."></noscript>
+```
 
-Cada etapa pode ser aplicada e validada isoladamente, sem alterar layout, lógica de agendamento ou o lazy loading já implementado.
+Texto aparece com fallback (Inter system) e troca quando Playfair chega — sem bloquear o FCP.
 
+#### Prioridade 4 — Recomprimir/redimensionar imagens da galeria (impacto: libera banda do hero)
+Lighthouse mostra `corte-degrade.jpg = 1.5MB` (real 960×1280, exibido 315×420) e `corte-americano.jpg = 627KB` (768×1024, exibido 315×420). Mesmo com `loading="lazy"`, o preload scanner mobile baixa cedo. Recomprimir para ~512×682 a 75% qualidade (alvo <80KB cada).
+
+> **Nota:** Os arquivos já foram "comprimidos" antes mas o build em produção mostra 1.5MB e 627KB — provavelmente as versões otimizadas locais não foram aplicadas ou foram revertidas. Vamos confirmar olhando os arquivos atuais em `src/assets/` e re-otimizar se preciso.
+
+#### Prioridade 5 — `fetchpriority="high"` no hero + `low` na galeria
+Hero não tem imagem (é só texto), mas vale marcar a galeria com `fetchpriority="low"` para o browser priorizar JS/CSS/fonte do hero.
+
+### O que NÃO recomendamos agora
+- Self-host das fontes (mudança estrutural maior).
+- Inline crítico do CSS (requer build plugin).
+- Remover Playfair (mudaria o visual).
+
+### Plano de execução (sequencial, validar após cada etapa)
+
+1. **`index.html`**: adicionar preload da Playfair + carregar Google Fonts CSS via `media="print"` trick.
+2. **`src/assets/`**: re-comprimir e redimensionar `corte-degrade.jpg` e `corte-americano.jpg` para ≤80KB cada em 512×682.
+3. **`GaleriaCortes.tsx`**: confirmar `fetchpriority="low"` (já feito anteriormente, validar).
+4. Re-rodar Lighthouse mobile.
+
+### Resultado esperado
+- FCP: 3.5s → **~1.5–2s**
+- LCP: 3.6s → **~2–2.5s**
+- Performance score: 77 → **~90+**
+
+Sem nenhuma alteração de layout, lógica de agendamento, rotas ou lazy loading.
