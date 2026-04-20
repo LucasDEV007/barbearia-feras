@@ -1,74 +1,77 @@
 
-## Diagnóstico de renderização inicial (mobile)
 
-Lighthouse mobile aponta **FCP 3.5s** e **LCP 3.6s** com **3.98s de "Element render delay"** no `<h1>` do hero. Análise dos dados + código:
+## Etapa 4 (versão segura): lazy loading parcial na landing
 
-### O que está bloqueando o render do hero
+Escopo reduzido — só aplicar `React.lazy` + `Suspense` em 3 seções abaixo da dobra. Sem `requestIdleCallback`, sem mexer em mapa, WhatsApp ou banner PWA.
 
-| # | Recurso | Problema | Impacto medido |
-|---|---------|----------|----------------|
-| 1 | `index-DMiVg3Ar.css` (12KB) | Bloqueia render | 153ms |
-| 2 | Google Fonts CSS (`fonts.googleapis.com/css2?...`) | Bloqueia render — só descoberto **após** parsear o CSS principal | **780ms** |
-| 3 | `Inter.woff2` + `PlayfairDisplay.woff2` | LCP é o `<h1>` em Playfair → texto fica invisível até a fonte chegar | ~3.6s na cadeia |
-| 4 | `index-DY7oC8YO.js` (163KB) | JS do app — sem ele o React não monta o `<h1>` | bloqueia LCP |
-| 5 | Imagens da galeria (corte-degrade 1.5MB, americano 627KB) | Disputam banda mesmo com `loading="lazy"` (estão a ~2.8k px da dobra mas o navegador faz lookahead) | rouba banda do hero |
+### Mudanças (apenas `src/pages/Index.tsx`)
 
-### Causa raiz do "Element render delay" de 3.98s
+**Convertido para lazy:**
+- `GaleriaCortes`
+- `ReviewsSection`
+- `CortesRecentesSection`
 
-O LCP (texto `Barbearia Feras`) só pinta quando **três coisas convergem**: JS baixado+parseado, CSS principal pronto, e fonte Playfair carregada. A cadeia atual é serial:
+**Permanece eager (import estático):**
+- `AppHeader`
+- `HeroSection`
+- `ServicosSection`
+- `LocationSection` (mapa — sem mudança)
+- `WhatsAppButton` (sem mudança)
+- `InstallAppBanner` (sem mudança)
+- Footer (inline na própria `Index`)
 
-```text
-HTML → CSS principal (12KB) → Google Fonts CSS (1.7KB) → Playfair.woff2 (39KB)
-                            ↘ JS (163KB) → React monta <h1>
+### Estrutura nova
+
+```tsx
+import { lazy, Suspense } from "react";
+import HeroSection from "@/components/HeroSection";
+import ServicosSection from "@/components/ServicosSection";
+import LocationSection from "@/components/LocationSection";
+import AppHeader from "@/components/AppHeader";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import InstallAppBanner from "@/components/InstallAppBanner";
+
+const GaleriaCortes = lazy(() => import("@/components/GaleriaCortes"));
+const ReviewsSection = lazy(() => import("@/components/ReviewsSection"));
+const CortesRecentesSection = lazy(() => import("@/components/CortesRecentesSection"));
+
+// No JSX, envolver as 3 seções lazy com:
+<Suspense fallback={null}>
+  <GaleriaCortes />
+  ...
+</Suspense>
 ```
 
-A fonte Playfair é descoberta **tarde** (só após o CSS principal baixar) e o navegador tem que esperar para pintar o texto. Enquanto isso a galeria de imagens grandes consome banda em paralelo.
+A ordem visual das seções continua exatamente igual à atual.
 
-### Recomendações priorizadas (todas seguras, sem mexer em rotas/lazy/estrutura)
+### Garantias
 
-#### Prioridade 1 — Preload da fonte Playfair (impacto: −500 a −1500ms no LCP)
-A fonte do LCP é descoberta tarde. Adicionar `<link rel="preload" as="font">` no `index.html` faz o navegador iniciar o download em paralelo com o CSS, eliminando 1 nível da cadeia crítica.
+- **Layout idêntico**: as seções aparecem no mesmo lugar, mesma aparência. `Suspense fallback={null}` evita qualquer flash visual — em conexões normais elas chegam em <100ms.
+- **Comportamento idêntico**: nenhuma seção sofre mudança interna. O que mudou foi só *quando* o JS dessas 3 seções é baixado (em chunks separados, em paralelo com o resto).
+- **Sem mudanças em**: `App.tsx`, rotas, agendamento, admin, mapa, WhatsApp, banner, fontes, imagens, CSS.
+- **Sem `requestIdleCallback`**: as seções montam imediatamente ao serem alcançadas no render — só o *download* do JS é diferido.
 
-```html
-<link rel="preload" href="https://fonts.gstatic.com/s/playfairdisplay/v40/nuFiD-vYSZviVYUb_rj3ij__anPXDTzYgEM86xQ.woff2" as="font" type="font/woff2" crossorigin>
-```
+### Detalhes técnicos
 
-#### Prioridade 2 — `font-display: swap` garantido + fallback metric-compatible (impacto: FCP imediato)
-O Google Fonts já entrega `&display=swap`, mas confirmar e adicionar `size-adjust` no `@font-face` fallback para reduzir CLS quando a fonte trocar. Pequeno ajuste no CSS.
+- Vite gera 3 chunks adicionais (`GaleriaCortes-*.js`, `ReviewsSection-*.js`, `CortesRecentesSection-*.js`) e os remove do bundle principal.
+- `CortesRecentesSection` faz 2 chamadas Supabase RPC no `useEffect` — adiar o chunk adia também essas requisições, liberando banda no carregamento crítico.
+- `GaleriaCortes` traz 4 imports de assets de imagem — sai do path crítico do bundle inicial.
+- Ganho estimado: bundle inicial cai de 163KB para ~130–140KB (redução modesta e segura nesta etapa).
 
-#### Prioridade 3 — `media="print"` trick para Google Fonts CSS (impacto: −780ms render-blocking)
-Carregar o CSS de fontes de forma não-bloqueante, aplicando após download:
+### Resultado esperado (estimativa conservadora)
 
-```html
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?..." media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?..."></noscript>
-```
+| Métrica | Antes | Depois |
+|---|---|---|
+| Bundle inicial JS | 163KB | ~130–140KB |
+| FCP mobile | 3.4s | ~2.8–3.0s |
+| LCP mobile | 3.6s | ~3.0–3.2s |
 
-Texto aparece com fallback (Inter system) e troca quando Playfair chega — sem bloquear o FCP.
+Ganho menor do que a versão completa, mas zero risco de mudança perceptível. Após validar, dá para avançar para adiar mapa + `requestIdleCallback` numa etapa futura.
 
-#### Prioridade 4 — Recomprimir/redimensionar imagens da galeria (impacto: libera banda do hero)
-Lighthouse mostra `corte-degrade.jpg = 1.5MB` (real 960×1280, exibido 315×420) e `corte-americano.jpg = 627KB` (768×1024, exibido 315×420). Mesmo com `loading="lazy"`, o preload scanner mobile baixa cedo. Recomprimir para ~512×682 a 75% qualidade (alvo <80KB cada).
+### Validação após aplicar
 
-> **Nota:** Os arquivos já foram "comprimidos" antes mas o build em produção mostra 1.5MB e 627KB — provavelmente as versões otimizadas locais não foram aplicadas ou foram revertidas. Vamos confirmar olhando os arquivos atuais em `src/assets/` e re-otimizar se preciso.
+1. Abrir `/` em mobile (modo anônimo) — página deve carregar visualmente igual.
+2. Conferir que galeria, avaliações e cortes recentes aparecem normalmente ao rolar.
+3. Mapa, botão WhatsApp e banner PWA continuam idênticos.
+4. (Opcional) Rodar Lighthouse mobile e comparar com a baseline atual.
 
-#### Prioridade 5 — `fetchpriority="high"` no hero + `low` na galeria
-Hero não tem imagem (é só texto), mas vale marcar a galeria com `fetchpriority="low"` para o browser priorizar JS/CSS/fonte do hero.
-
-### O que NÃO recomendamos agora
-- Self-host das fontes (mudança estrutural maior).
-- Inline crítico do CSS (requer build plugin).
-- Remover Playfair (mudaria o visual).
-
-### Plano de execução (sequencial, validar após cada etapa)
-
-1. **`index.html`**: adicionar preload da Playfair + carregar Google Fonts CSS via `media="print"` trick.
-2. **`src/assets/`**: re-comprimir e redimensionar `corte-degrade.jpg` e `corte-americano.jpg` para ≤80KB cada em 512×682.
-3. **`GaleriaCortes.tsx`**: confirmar `fetchpriority="low"` (já feito anteriormente, validar).
-4. Re-rodar Lighthouse mobile.
-
-### Resultado esperado
-- FCP: 3.5s → **~1.5–2s**
-- LCP: 3.6s → **~2–2.5s**
-- Performance score: 77 → **~90+**
-
-Sem nenhuma alteração de layout, lógica de agendamento, rotas ou lazy loading.
