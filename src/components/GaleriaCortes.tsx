@@ -39,6 +39,8 @@ const GaleriaCortes = () => {
                   src={estilo.imagem}
                   alt={`Corte ${estilo.nome}`}
                   loading="lazy"
+                  decoding="async"
+                  fetchPriority="low"
                   width={512}
                   height={682}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
