@@ -1,7 +1,8 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Scissors, LogOut, CalendarDays, ShieldCheck, Home } from "lucide-react";
+import { LogOut, CalendarDays, ShieldCheck, Home } from "lucide-react";
 import { BARBEARIA_NOME } from "@/lib/constants";
+import heroEmblem from "@/assets/hero-emblem.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 
@@ -31,7 +32,7 @@ const AppHeader = () => {
     <header className="border-b border-border px-4 py-3 bg-card/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-5xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <Scissors className="h-6 w-6 text-primary" />
+          <img src={heroEmblem} alt="" width={32} height={32} className="h-8 w-8 object-contain" />
           <h1 className="text-lg font-bold text-primary" style={{ fontFamily: "var(--font-display)" }}>
             {BARBEARIA_NOME}
           </h1>
