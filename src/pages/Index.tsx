@@ -1,14 +1,16 @@
+import { lazy, Suspense } from "react";
 import HeroSection from "@/components/HeroSection";
 import ServicosSection from "@/components/ServicosSection";
-import GaleriaCortes from "@/components/GaleriaCortes";
-import CortesRecentesSection from "@/components/CortesRecentesSection";
 import LocationSection from "@/components/LocationSection";
-import ReviewsSection from "@/components/ReviewsSection";
 import AppHeader from "@/components/AppHeader";
 import WhatsAppButton from "@/components/WhatsAppButton";
 import InstallAppBanner from "@/components/InstallAppBanner";
 import { BARBEARIA_NOME } from "@/lib/constants";
 import { Scissors } from "lucide-react";
+
+const GaleriaCortes = lazy(() => import("@/components/GaleriaCortes"));
+const ReviewsSection = lazy(() => import("@/components/ReviewsSection"));
+const CortesRecentesSection = lazy(() => import("@/components/CortesRecentesSection"));
 
 const Index = () => {
   return (
@@ -16,10 +18,14 @@ const Index = () => {
       <AppHeader />
       <HeroSection />
       <ServicosSection />
-      <GaleriaCortes />
+      <Suspense fallback={null}>
+        <GaleriaCortes />
+      </Suspense>
       <LocationSection />
-      <ReviewsSection />
-      <CortesRecentesSection />
+      <Suspense fallback={null}>
+        <ReviewsSection />
+        <CortesRecentesSection />
+      </Suspense>
 
       <footer className="border-t border-border py-8 text-center">
         <div className="flex items-center justify-center gap-2 text-primary mb-2">
