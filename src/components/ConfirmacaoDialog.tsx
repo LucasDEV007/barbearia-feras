@@ -35,17 +35,17 @@ const buildGoogleCalendarUrl = (dados: { servico: string; data: string; horario:
   const estiloText = dados.estilo ? `\nEstilo: ${dados.estilo}` : "";
   const params = new URLSearchParams({
     action: "TEMPLATE",
-    text: `Barbearia Feras - ${dados.servico}`,
+    text: `Fera's Barbershop - ${dados.servico}`,
     details: `Agendamento de ${dados.nome}\nServiço: ${dados.servico}${estiloText}`,
     dates: `${startDate}/${endDate}`,
-    location: "Barbearia Feras",
+    location: "Fera's Barbershop",
   });
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 };
 
 const buildWhatsAppUrl = (dados: { servico: string; data: string; horario: string; nome: string; estilo?: string | null }) => {
   const estiloText = dados.estilo ? `\nEstilo: ${dados.estilo}` : "";
-  const msg = `Olá! Sou ${dados.nome}.\n\nAcabei de realizar um agendamento na Barbearia Feras:\n\nServiço: ${dados.servico}${estiloText}\nData: ${dados.data}\nHorário: ${dados.horario}\n\nAté lá!`;
+  const msg = `Olá! Sou ${dados.nome}.\n\nAcabei de realizar um agendamento na Fera's Barbershop:\n\nServiço: ${dados.servico}${estiloText}\nData: ${dados.data}\nHorário: ${dados.horario}\n\nAté lá!`;
   return `https://wa.me/${BARBEARIA_WHATSAPP}?text=${encodeURIComponent(msg)}`;
 };
 

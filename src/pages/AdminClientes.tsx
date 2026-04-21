@@ -83,7 +83,7 @@ const AdminClientes = () => {
     let phone = cliente.telefone.replace(/\D/g, "");
     if (!phone.startsWith("55")) phone = "55" + phone;
     const msg = encodeURIComponent(
-      `Olá ${cliente.nome}, sentimos sua falta na Barbearia Feras! Que tal agendar seu próximo corte? 😃`
+      `Olá ${cliente.nome}, sentimos sua falta na Fera's Barbershop! Que tal agendar seu próximo corte? 😃`
     );
     window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
   };
