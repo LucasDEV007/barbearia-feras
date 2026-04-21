@@ -17,15 +17,15 @@ const HeroSection = () => {
 
       <div className="relative z-10 text-center px-4 max-w-3xl mx-auto">
         {/* Emblema dourado: tesoura + pente em moldura */}
-        <div className="flex items-center justify-center mb-6">
+        <div className="flex items-center justify-center mb-8">
           <img
             src={heroEmblem}
-            alt="Fera's Barbershop"
-            width={96}
-            height={96}
+            alt="Barbearia Feras"
+            width={224}
+            height={224}
             fetchPriority="high"
             decoding="async"
-            className="h-20 w-20 md:h-24 md:w-24 object-contain drop-shadow-[0_0_24px_hsl(var(--primary)/0.5)]"
+            className="h-40 w-40 md:h-56 md:w-56 object-contain drop-shadow-[0_0_36px_hsl(var(--primary)/0.55)]"
           />
         </div>
 
