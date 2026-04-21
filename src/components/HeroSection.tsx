@@ -24,8 +24,9 @@ const HeroSection = () => {
           {BARBEARIA_NOME}
         </h1>
 
-        <p className="text-2xl md:text-3xl font-bold text-primary mt-4 mb-3 max-w-xl mx-auto leading-relaxed">
-          Fera's não corta! Modela.
+        <p className="text-3xl md:text-4xl font-bold mt-6 mb-3 max-w-xl mx-auto leading-tight tracking-tight">
+          <span className="text-foreground/90">Fera's não corta!</span>{" "}
+          <span className="text-primary drop-shadow-[0_0_12px_hsl(var(--primary)/0.45)]">Modela.</span>
         </p>
         <p className="text-muted-foreground mb-10">
           Agende seu horário online de forma rápida e prática.
@@ -33,7 +34,7 @@ const HeroSection = () => {
 
         <div className="flex flex-col items-center gap-3 max-w-sm mx-auto">
           <Link to="/agendar" className="w-full">
-            <Button size="lg" className="w-full text-lg px-10 py-6 font-semibold rounded-full shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all">
+            <Button size="lg" className="w-full text-lg px-10 py-6 font-semibold rounded-full shadow-[0_0_24px_-4px_hsl(var(--primary)/0.55)] hover:shadow-[0_0_32px_-2px_hsl(var(--primary)/0.75)] transition-all">
               Agendar agora →
             </Button>
           </Link>
