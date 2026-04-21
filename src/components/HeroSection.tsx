@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Scissors, Calendar } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { BARBEARIA_NOME } from "@/lib/constants";
+import heroEmblem from "@/assets/hero-emblem.png";
 
 const HeroSection = () => {
   return (
@@ -15,14 +16,20 @@ const HeroSection = () => {
       </div>
 
       <div className="relative z-10 text-center px-4 max-w-3xl mx-auto">
-        {/* Emblema dourado: tesoura+pente em moldura quadrada */}
+        {/* Emblema dourado: tesoura + pente em moldura */}
         <div className="flex items-center justify-center mb-6">
-          <div className="relative h-16 w-16 rounded-md border-2 border-primary flex items-center justify-center shadow-[0_0_24px_-4px_hsl(var(--primary)/0.55)]">
-            <Scissors className="h-8 w-8 text-primary" strokeWidth={2} />
-          </div>
+          <img
+            src={heroEmblem}
+            alt="Fera's Barbershop"
+            width={96}
+            height={96}
+            fetchPriority="high"
+            decoding="async"
+            className="h-20 w-20 md:h-24 md:w-24 object-contain drop-shadow-[0_0_24px_hsl(var(--primary)/0.5)]"
+          />
         </div>
 
-        <h1 className="font-display text-6xl md:text-8xl font-bold text-primary mb-4 tracking-tight drop-shadow-[0_2px_16px_hsl(var(--primary)/0.35)]">
+        <h1 className="font-display text-6xl md:text-8xl font-bold mb-4 tracking-tight bg-gradient-to-b from-[hsl(43_85%_72%)] via-primary to-[hsl(38_75%_45%)] bg-clip-text text-transparent drop-shadow-[0_2px_18px_hsl(var(--primary)/0.4)]">
           {BARBEARIA_NOME}
         </h1>
 
