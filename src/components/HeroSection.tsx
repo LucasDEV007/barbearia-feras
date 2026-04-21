@@ -2,17 +2,23 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Scissors } from "lucide-react";
 import { BARBEARIA_NOME } from "@/lib/constants";
+import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroSection = () => {
   return (
     <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
-      {/* Background pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `repeating-linear-gradient(45deg, hsl(var(--primary)) 0, hsl(var(--primary)) 1px, transparent 0, transparent 50%)`,
-          backgroundSize: '20px 20px'
-        }} />
-      </div>
+      {/* Background hero artwork */}
+      <img
+        src={heroBg}
+        alt=""
+        aria-hidden="true"
+        fetchPriority="high"
+        decoding="async"
+        width={1920}
+        height={1280}
+        className="absolute inset-0 w-full h-full object-cover opacity-60 pointer-events-none select-none"
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/20 to-background pointer-events-none" />
 
       <div className="relative z-10 text-center px-4 max-w-3xl mx-auto">
         <div className="flex items-center justify-center gap-3 mb-6">
