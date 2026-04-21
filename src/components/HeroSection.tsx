@@ -24,7 +24,7 @@ const HeroSection = () => {
           {BARBEARIA_NOME}
         </h1>
 
-        <p className="text-lg md:text-xl text-muted-foreground mb-2 max-w-xl mx-auto">
+        <p className="text-2xl md:text-3xl font-bold text-primary mt-4 mb-3 max-w-xl mx-auto leading-relaxed">
           Fera's não corta! Modela.
         </p>
         <p className="text-muted-foreground mb-10">
