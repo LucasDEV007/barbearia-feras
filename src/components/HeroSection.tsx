@@ -25,7 +25,7 @@ const HeroSection = () => {
         </h1>
 
         <p className="text-lg md:text-xl text-muted-foreground mb-2 max-w-xl mx-auto">
-          Estilo, tradição e atendimento de primeira.
+          Fera's não corta! Modela.
         </p>
         <p className="text-muted-foreground mb-10">
           Agende seu horário online de forma rápida e prática.
