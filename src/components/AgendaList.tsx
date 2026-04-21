@@ -29,7 +29,7 @@ interface AgendaListProps {
 const buildReviewWhatsAppUrl = (ag: Agendamento) => {
   let phone = ag.telefone.replace(/\D/g, "");
   if (!phone.startsWith("55")) phone = "55" + phone;
-  const msg = `Olá ${ag.nome_cliente}! Obrigado por escolher a Barbearia Feras.\n\nComo foi seu ${ag.servico} hoje?\n\nSe puder, deixe sua avaliação no Google:\n${GOOGLE_REVIEW_LINK}`;
+  const msg = `Olá ${ag.nome_cliente}! Obrigado por escolher a Fera's Barbershop.\n\nComo foi seu ${ag.servico} hoje?\n\nSe puder, deixe sua avaliação no Google:\n${GOOGLE_REVIEW_LINK}`;
   return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
 };
 

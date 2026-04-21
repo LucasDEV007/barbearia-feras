@@ -1,4 +1,4 @@
-# Barbearia Feras — Sistema de Agendamento
+# Fera's Barbershop — Sistema de Agendamento
 
 Sistema web para agendamento de horários em barbearias.
 

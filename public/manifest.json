@@ -1,7 +1,7 @@
 {
-  "name": "Barbearia Feras",
-  "short_name": "Barbearia Feras",
-  "description": "Agendamento online da Barbearia Feras",
+  "name": "Fera's Barbershop",
+  "short_name": "Fera's Barbershop",
+  "description": "Agendamento online da Fera's Barbershop",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1a1d2e",

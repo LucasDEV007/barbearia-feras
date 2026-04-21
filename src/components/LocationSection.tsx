@@ -29,7 +29,7 @@ const LocationSection = () => (
             allowFullScreen
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            title="Localização Barbearia Feras"
+            title="Localização Fera's Barbershop"
           />
         </div>
 

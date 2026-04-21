@@ -64,6 +64,6 @@ export function gerarHorarios(diaSemana: number, duracaoServico: number = 30): s
   return slots;
 }
 
-export const BARBEARIA_NOME = "Barbearia Feras";
+export const BARBEARIA_NOME = "Fera's Barbershop";
 export const BARBEARIA_WHATSAPP = "5585985653388";
 export const GOOGLE_REVIEW_LINK = "https://maps.app.goo.gl/2de33R82W4RfUdzG9";
