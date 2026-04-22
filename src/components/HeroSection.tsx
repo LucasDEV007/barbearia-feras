@@ -16,18 +16,19 @@ const HeroSection = () => {
       </div>
 
       <div className="relative z-10 text-center px-4 max-w-3xl mx-auto">
-        {/* Emblema dourado: tesoura + pente em moldura */}
-        <div className="flex items-center justify-center mb-6">
-          <img
-            src={heroEmblem}
-            alt="Fera's Barbershop"
-            width={96}
-            height={96}
-            fetchPriority="high"
-            decoding="async"
-            className="h-20 w-20 md:h-24 md:w-24 object-contain drop-shadow-[0_0_24px_hsl(var(--primary)/0.5)]"
-          />
-        </div>
+        {/* Emblema dourado: tesoura + pente em moldura — destaque absoluto sem afetar o fluxo */}
+        <img
+          src={heroEmblem}
+          alt="Fera's Barbershop"
+          width={144}
+          height={144}
+          fetchPriority="high"
+          decoding="async"
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-4 md:-top-8 h-28 w-28 md:h-36 md:w-36 object-contain opacity-95 drop-shadow-[0_0_32px_hsl(var(--primary)/0.6)] animate-in fade-in zoom-in-95 duration-700"
+        />
+        {/* Espaçador invisível para preservar o espaço original do emblema no fluxo */}
+        <div className="h-20 w-20 md:h-24 md:w-24 mx-auto mb-6" aria-hidden="true" />
 
         <h1 className="font-display text-6xl md:text-8xl font-bold mb-4 tracking-tight bg-gradient-to-b from-[hsl(43_85%_72%)] via-primary to-[hsl(38_75%_45%)] bg-clip-text text-transparent drop-shadow-[0_2px_18px_hsl(var(--primary)/0.4)]">
           {BARBEARIA_NOME}
