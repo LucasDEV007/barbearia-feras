@@ -32,7 +32,7 @@ const AppHeader = () => {
     <header className="border-b border-border px-4 py-3 bg-card/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-5xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <img src={heroEmblem} alt="" width={32} height={32} className="h-8 w-8 object-contain" />
+          <img src={heroEmblem} alt="" width={56} height={56} className="h-12 w-12 md:h-14 md:w-14 object-contain scale-125 drop-shadow-[0_0_10px_hsl(var(--primary)/0.45)]" />
           <h1 className="text-lg font-bold text-primary" style={{ fontFamily: "var(--font-display)" }}>
             {BARBEARIA_NOME}
           </h1>
