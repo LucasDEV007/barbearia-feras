@@ -25,7 +25,7 @@ const HeroSection = () => {
           fetchPriority="high"
           decoding="async"
           aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-4 md:-top-8 h-28 w-28 md:h-36 md:w-36 object-contain opacity-95 drop-shadow-[0_0_32px_hsl(var(--primary)/0.6)] animate-in fade-in zoom-in-95 duration-700"
+          className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-10 md:-top-16 h-48 w-48 md:h-64 md:w-64 object-contain opacity-95 drop-shadow-[0_0_40px_hsl(var(--primary)/0.65)] animate-in fade-in zoom-in-95 duration-700"
         />
         {/* Espaçador invisível para preservar o espaço original do emblema no fluxo */}
         <div className="h-20 w-20 md:h-24 md:w-24 mx-auto mb-6" aria-hidden="true" />
