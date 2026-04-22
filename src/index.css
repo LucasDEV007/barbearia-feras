@@ -65,3 +65,8 @@
     font-family: var(--font-display);
   }
 }
+
+@keyframes lazyFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
