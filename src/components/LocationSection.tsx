@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { MapPin, Clock, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -5,8 +6,11 @@ const ENDERECO = "R. Prof. José Henrique, 1320 - Guajeru, Fortaleza - CE, 60843
 const MAPS_EMBED = "https://maps.google.com/maps?q=-3.8307956,-38.4782368&z=18&ie=UTF8&iwloc=B&output=embed";
 const MAPS_LINK = "https://www.google.com/maps/place/Fera's+Barbershop/@-3.8307902,-38.4808117,763m/data=!3m2!1e3!4b1!4m6!3m5!1s0x7c74553dc49b12b:0x599f5f0128ac8be5!8m2!3d-3.8307956!4d-38.4782368!16s%2Fg%2F11c6c99ljk?hl=pt-BR&entry=ttu&g_ep=EgoyMDI2MDMyNC4wIKXMDSoASAFQAw%3D%3D";
 
-const LocationSection = () => (
-  <section className="py-16 px-4 bg-card/50">
+const LocationSection = () => {
+  const [showMap, setShowMap] = useState(false);
+
+  return (
+    <section className="py-16 px-4 bg-card/50">
     <div className="max-w-5xl mx-auto">
       <h2
         className="text-3xl font-bold text-center text-foreground mb-2"
@@ -21,16 +25,31 @@ const LocationSection = () => (
       <div className="grid md:grid-cols-2 gap-8 items-start">
         {/* Map */}
         <div className="rounded-xl overflow-hidden border border-border aspect-video">
-          <iframe
-            src={MAPS_EMBED}
-            width="100%"
-            height="100%"
-            style={{ border: 0 }}
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Localização Fera's Barbershop"
-          />
+          {showMap ? (
+            <iframe
+              src={MAPS_EMBED}
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Localização Fera's Barbershop"
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={() => setShowMap(true)}
+              className="w-full h-full flex flex-col items-center justify-center gap-3 bg-secondary/50 bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.08),transparent_70%)] hover:bg-secondary/70 transition-colors group"
+              aria-label="Carregar mapa interativo"
+            >
+              <MapPin className="h-10 w-10 text-primary group-hover:scale-110 transition-transform" />
+              <span className="text-sm text-muted-foreground">Mapa interativo</span>
+              <span className="inline-flex items-center justify-center h-9 px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium">
+                Ver localização
+              </span>
+            </button>
+          )}
         </div>
 
         {/* Info */}
@@ -64,7 +83,8 @@ const LocationSection = () => (
         </div>
       </div>
     </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export default LocationSection;
