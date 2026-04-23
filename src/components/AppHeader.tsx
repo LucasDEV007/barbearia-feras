@@ -11,9 +11,10 @@ const AppHeader = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Defer Supabase load: only on non-landing routes, and only when the
-    // browser is idle, to keep the landing page bundle and TTI clean.
+    // Defer Supabase load: skip on landing (no auth UI needed) and on /admin/*
+    // (AdminLayout already manages session). Run only when the browser is idle.
     if (location.pathname === "/") return;
+    if (location.pathname.startsWith("/admin")) return;
 
     let unsubscribe: (() => void) | undefined;
     let cancelled = false;
@@ -85,7 +86,11 @@ const AppHeader = () => {
             size="sm"
             asChild
           >
-            <Link to="/agendar">
+            <Link
+              to="/agendar"
+              onMouseEnter={() => { void import("@/pages/Agendar"); }}
+              onTouchStart={() => { void import("@/pages/Agendar"); }}
+            >
               <CalendarDays className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Agendar</span>
             </Link>
@@ -96,7 +101,18 @@ const AppHeader = () => {
             size="sm"
             asChild
           >
-            <Link to="/admin">
+            <Link
+              to="/admin"
+              onMouseEnter={() => {
+                void import("@/components/AdminLayout");
+                void import("@/pages/AdminDashboard");
+                void import("@/pages/Login");
+              }}
+              onTouchStart={() => {
+                void import("@/components/AdminLayout");
+                void import("@/pages/Login");
+              }}
+            >
               <ShieldCheck className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Admin</span>
             </Link>
