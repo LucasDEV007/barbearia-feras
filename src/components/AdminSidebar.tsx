@@ -20,15 +20,15 @@ import { Button } from "@/components/ui/button";
 import { Scissors } from "lucide-react";
 
 const items = [
-  { title: "Visão Geral", url: "/admin", icon: LayoutDashboard },
-  { title: "Agenda", url: "/admin/agenda", icon: CalendarDays },
-  { title: "Clientes", url: "/admin/clientes", icon: Users },
-  { title: "Financeiro", url: "/admin/financeiro", icon: DollarSign },
-  { title: "Marketing", url: "/admin/marketing", icon: Megaphone },
-  { title: "Fidelidade", url: "/admin/fidelidade", icon: Gift },
-  { title: "Cortes Recentes", url: "/admin/cortes-recentes", icon: Camera },
-  { title: "Bloqueios", url: "/admin/bloqueios", icon: CalendarOff },
-  { title: "Configurações", url: "/admin/configuracoes", icon: Settings },
+  { title: "Visão Geral", url: "/admin", icon: LayoutDashboard, prefetch: () => import("@/pages/AdminDashboard") },
+  { title: "Agenda", url: "/admin/agenda", icon: CalendarDays, prefetch: () => import("@/pages/AdminAgenda") },
+  { title: "Clientes", url: "/admin/clientes", icon: Users, prefetch: () => import("@/pages/AdminClientes") },
+  { title: "Financeiro", url: "/admin/financeiro", icon: DollarSign, prefetch: () => import("@/pages/AdminFinanceiro") },
+  { title: "Marketing", url: "/admin/marketing", icon: Megaphone, prefetch: () => import("@/pages/AdminMarketing") },
+  { title: "Fidelidade", url: "/admin/fidelidade", icon: Gift, prefetch: () => import("@/pages/AdminFidelidade") },
+  { title: "Cortes Recentes", url: "/admin/cortes-recentes", icon: Camera, prefetch: () => import("@/pages/AdminCortesRecentes") },
+  { title: "Bloqueios", url: "/admin/bloqueios", icon: CalendarOff, prefetch: () => import("@/pages/AdminBloqueios") },
+  { title: "Configurações", url: "/admin/configuracoes", icon: Settings, prefetch: () => import("@/pages/AdminConfiguracoes") },
 ];
 
 export function AdminSidebar() {
@@ -68,7 +68,14 @@ export function AdminSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <NavLink to={item.url} end={item.url === "/admin"} className="hover:bg-muted/50" activeClassName="bg-muted text-primary font-medium">
+                    <NavLink
+                      to={item.url}
+                      end={item.url === "/admin"}
+                      className="hover:bg-muted/50"
+                      activeClassName="bg-muted text-primary font-medium"
+                      onMouseEnter={() => { void item.prefetch(); }}
+                      onTouchStart={() => { void item.prefetch(); }}
+                    >
                       <item.icon className="mr-2 h-4 w-4" />
                       {!collapsed && <span>{item.title}</span>}
                     </NavLink>

@@ -4,6 +4,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/AdminSidebar";
 
+// Prefetch admin route chunks so tab switches feel instant.
+const prefetchAdminRoutes = () => {
+  import("@/pages/AdminDashboard");
+  import("@/pages/AdminAgenda");
+  import("@/pages/AdminClientes");
+  import("@/pages/AdminFinanceiro");
+  import("@/pages/AdminMarketing");
+  import("@/pages/AdminFidelidade");
+  import("@/pages/AdminCortesRecentes");
+  import("@/pages/AdminBloqueios");
+  import("@/pages/AdminConfiguracoes");
+};
+
 const AdminLayout = () => {
   const navigate = useNavigate();
   const [authState, setAuthState] = useState<"loading" | "authed" | "unauthed">("loading");
@@ -27,6 +40,24 @@ const AdminLayout = () => {
     });
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  useEffect(() => {
+    if (authState !== "authed") return;
+    const ric = (window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+    }).requestIdleCallback;
+    const handle = ric
+      ? ric(prefetchAdminRoutes, { timeout: 3000 })
+      : window.setTimeout(prefetchAdminRoutes, 800);
+    return () => {
+      if (ric) {
+        (window as Window & { cancelIdleCallback?: (h: number) => void })
+          .cancelIdleCallback?.(handle as number);
+      } else {
+        clearTimeout(handle as number);
+      }
+    };
+  }, [authState]);
 
   if (authState !== "authed") {
     return (
