@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { LogOut, CalendarDays, ShieldCheck, Home } from "lucide-react";
 import { BARBEARIA_NOME } from "@/lib/constants";
 import heroEmblem from "@/assets/hero-emblem.png";
-import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 
 const AppHeader = () => {
@@ -12,17 +11,48 @@ const AppHeader = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Defer Supabase load: only on non-landing routes, and only when the
+    // browser is idle, to keep the landing page bundle and TTI clean.
+    if (location.pathname === "/") return;
+
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
+
+    const loadAuth = async () => {
+      const { supabase } = await import("@/integrations/supabase/client");
+      if (cancelled) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (cancelled) return;
       setIsAuthenticated(!!session);
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        (_event, session) => setIsAuthenticated(!!session),
+      );
+      unsubscribe = () => subscription.unsubscribe();
+    };
+
+    const ric = (window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+    }).requestIdleCallback;
+    const handle = ric
+      ? ric(() => { void loadAuth(); }, { timeout: 2000 })
+      : window.setTimeout(() => { void loadAuth(); }, 200);
+
+    return () => {
+      cancelled = true;
+      if (ric) {
+        (window as Window & { cancelIdleCallback?: (h: number) => void })
+          .cancelIdleCallback?.(handle as number);
+      } else {
+        clearTimeout(handle as number);
+      }
+      unsubscribe?.();
+    };
+  }, [location.pathname]);
 
   const handleLogout = async () => {
+    const { supabase } = await import("@/integrations/supabase/client");
     await supabase.auth.signOut();
+    setIsAuthenticated(false);
     navigate("/");
   };
 
@@ -66,7 +96,7 @@ const AppHeader = () => {
             size="sm"
             asChild
           >
-            <Link to={isAuthenticated ? "/admin" : "/login"}>
+            <Link to="/admin">
               <ShieldCheck className="h-4 w-4 mr-1" />
               <span className="hidden sm:inline">Admin</span>
             </Link>
