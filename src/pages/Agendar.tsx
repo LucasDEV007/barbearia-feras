@@ -11,7 +11,8 @@ import { ChevronRight, Loader2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { SERVICOS } from "@/lib/constants";
+import { useServicosAtivos } from "@/hooks/use-servicos";
+import { Skeleton } from "@/components/ui/skeleton";
 import TimeSlotGrid from "@/components/TimeSlotGrid";
 import ConfirmacaoDialog from "@/components/ConfirmacaoDialog";
 import AppHeader from "@/components/AppHeader";
@@ -25,40 +26,6 @@ const ESTILOS = ["Degradê", "Social", "Americano", "Moicano"] as const;
 
 type ServicoQuantidades = Record<string, number>;
 
-function calcularSlotsOcupados(agendamentos: { horario: string; servico: string }[]): string[] {
-  const blocked = new Set<string>();
-  for (const ag of agendamentos) {
-    const [h, m] = ag.horario.split(":").map(Number);
-    const inicio = h * 60 + m;
-    const nomes = ag.servico.split(", ");
-    let duracao = 0;
-    for (const nome of nomes) {
-      const s = SERVICOS.find((sv) => sv.nome === nome.trim());
-      duracao += s ? s.duracao : 30;
-    }
-    for (let t = inicio; t < inicio + duracao; t += 30) {
-      const hh = Math.floor(t / 60).toString().padStart(2, "0");
-      const mm = (t % 60).toString().padStart(2, "0");
-      blocked.add(`${hh}:${mm}`);
-    }
-  }
-  return Array.from(blocked);
-}
-
-function calcDuracaoTotal(qtds: ServicoQuantidades): number {
-  return Object.entries(qtds).reduce((acc, [nome, qty]) => {
-    const s = SERVICOS.find((sv) => sv.nome === nome);
-    return acc + (s ? s.duracao * qty : 0);
-  }, 0);
-}
-
-function calcPrecoTotal(qtds: ServicoQuantidades): number {
-  return Object.entries(qtds).reduce((acc, [nome, qty]) => {
-    const s = SERVICOS.find((sv) => sv.nome === nome);
-    return acc + (s ? s.preco * qty : 0);
-  }, 0);
-}
-
 function buildServicoTexto(qtds: ServicoQuantidades): string {
   const parts: string[] = [];
   for (const [nome, qty] of Object.entries(qtds)) {
@@ -71,6 +38,42 @@ const Agendar = () => {
   const [searchParams] = useSearchParams();
   const estiloFromUrl = searchParams.get("estilo");
   const servicoFromUrl = searchParams.get("servico");
+
+  const { servicos: SERVICOS, loading: loadingServicos } = useServicosAtivos();
+
+  function calcularSlotsOcupados(agendamentos: { horario: string; servico: string }[]): string[] {
+    const blocked = new Set<string>();
+    for (const ag of agendamentos) {
+      const [h, m] = ag.horario.split(":").map(Number);
+      const inicio = h * 60 + m;
+      const nomes = ag.servico.split(", ");
+      let duracao = 0;
+      for (const nome of nomes) {
+        const s = SERVICOS.find((sv) => sv.nome === nome.trim());
+        duracao += s ? s.duracao : 30;
+      }
+      for (let t = inicio; t < inicio + duracao; t += 30) {
+        const hh = Math.floor(t / 60).toString().padStart(2, "0");
+        const mm = (t % 60).toString().padStart(2, "0");
+        blocked.add(`${hh}:${mm}`);
+      }
+    }
+    return Array.from(blocked);
+  }
+
+  function calcDuracaoTotal(qtds: ServicoQuantidades): number {
+    return Object.entries(qtds).reduce((acc, [nome, qty]) => {
+      const s = SERVICOS.find((sv) => sv.nome === nome);
+      return acc + (s ? s.duracao * qty : 0);
+    }, 0);
+  }
+
+  function calcPrecoTotal(qtds: ServicoQuantidades): number {
+    return Object.entries(qtds).reduce((acc, [nome, qty]) => {
+      const s = SERVICOS.find((sv) => sv.nome === nome);
+      return acc + (s ? s.preco * qty : 0);
+    }, 0);
+  }
 
   const [step, setStep] = useState(1);
   // Step 1: just selected service names
