@@ -1,4 +1,4 @@
-import { LayoutDashboard, CalendarDays, Users, DollarSign, Megaphone, LogOut, Gift, Camera, CalendarOff, Settings } from "lucide-react";
+import { LayoutDashboard, CalendarDays, Users, DollarSign, Megaphone, LogOut, Gift, Camera, CalendarOff, Settings, Scissors as ScissorsIcon } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -28,6 +28,7 @@ const items = [
   { title: "Fidelidade", url: "/admin/fidelidade", icon: Gift, prefetch: () => import("@/pages/AdminFidelidade") },
   { title: "Cortes Recentes", url: "/admin/cortes-recentes", icon: Camera, prefetch: () => import("@/pages/AdminCortesRecentes") },
   { title: "Bloqueios", url: "/admin/bloqueios", icon: CalendarOff, prefetch: () => import("@/pages/AdminBloqueios") },
+  { title: "Serviços", url: "/admin/servicos", icon: ScissorsIcon, prefetch: () => import("@/pages/AdminServicos") },
   { title: "Configurações", url: "/admin/configuracoes", icon: Settings, prefetch: () => import("@/pages/AdminConfiguracoes") },
 ];
 

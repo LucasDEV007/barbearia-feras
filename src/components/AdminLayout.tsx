@@ -15,6 +15,7 @@ const prefetchAdminRoutes = () => {
   import("@/pages/AdminCortesRecentes");
   import("@/pages/AdminBloqueios");
   import("@/pages/AdminConfiguracoes");
+  import("@/pages/AdminServicos");
 };
 
 const AdminLayout = () => {

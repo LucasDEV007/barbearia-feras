@@ -18,6 +18,7 @@ const AdminFidelidade = lazy(() => import("./pages/AdminFidelidade"));
 const AdminCortesRecentes = lazy(() => import("./pages/AdminCortesRecentes"));
 const AdminBloqueios = lazy(() => import("./pages/AdminBloqueios"));
 const AdminConfiguracoes = lazy(() => import("./pages/AdminConfiguracoes"));
+const AdminServicos = lazy(() => import("./pages/AdminServicos"));
 
 const RouteFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-background">
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="cortes-recentes" element={<AdminCortesRecentes />} />
             <Route path="bloqueios" element={<AdminBloqueios />} />
             <Route path="configuracoes" element={<AdminConfiguracoes />} />
+            <Route path="servicos" element={<AdminServicos />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Route>

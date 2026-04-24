@@ -283,6 +283,45 @@ export type Database = {
           },
         ]
       }
+      servicos: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          descricao: string
+          duracao: number
+          icone: string
+          id: string
+          nome: string
+          ordem: number
+          preco: number
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          descricao?: string
+          duracao: number
+          icone?: string
+          id?: string
+          nome: string
+          ordem?: number
+          preco: number
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          descricao?: string
+          duracao?: number
+          icone?: string
+          id?: string
+          nome?: string
+          ordem?: number
+          preco?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
