@@ -1,9 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Scissors, Sparkles, Palette, Snowflake, Droplet, Flame, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useServicosAtivos } from "@/hooks/use-servicos";
 
 const iconMap: Record<string, any> = {
   Scissors,
@@ -15,45 +14,9 @@ const iconMap: Record<string, any> = {
   Eye,
 };
 
-interface Servico {
-  id: string;
-  nome: string;
-  preco: number;
-  duracao: number;
-  descricao: string;
-  icone: string;
-}
-
 const ServicosSection = () => {
   const navigate = useNavigate();
-  const [servicos, setServicos] = useState<Servico[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      const { data } = await supabase
-        .from("servicos")
-        .select("id, nome, preco, duracao, descricao, icone, ordem, ativo")
-        .eq("ativo", true)
-        .order("ordem", { ascending: true });
-      if (!active) return;
-      setServicos(
-        ((data ?? []) as any[]).map((s) => ({
-          id: s.id,
-          nome: s.nome,
-          preco: Number(s.preco),
-          duracao: s.duracao,
-          descricao: s.descricao ?? "",
-          icone: s.icone ?? "Scissors",
-        })),
-      );
-      setLoading(false);
-    })();
-    return () => {
-      active = false;
-    };
-  }, []);
+  const { servicos, loading } = useServicosAtivos();
 
   return (
     <section className="py-20 px-4">
