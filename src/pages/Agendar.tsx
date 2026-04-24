@@ -251,7 +251,11 @@ const Agendar = () => {
             <p className="text-muted-foreground mb-6">Toque nos serviços desejados para selecioná-los.</p>
 
             <div className="grid grid-cols-1 gap-3">
-              {SERVICOS.map((s) => {
+              {loadingServicos
+                ? Array.from({ length: 5 }).map((_, i) => (
+                    <Skeleton key={i} className="h-20 w-full" />
+                  ))
+                : SERVICOS.map((s) => {
                 const selected = servicosSelecionados.includes(s.nome);
                 const IconComponent = iconMap[s.icone];
                 return (
